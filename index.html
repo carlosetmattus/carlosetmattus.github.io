@@ -480,7 +480,7 @@
         }
         .advisory-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(2, 1fr);
             gap: 1.25rem;
         }
         .advisory-card {
@@ -847,7 +847,9 @@
             .stack-row { flex-direction: column; gap: 0.75rem; }
             .stack-category { min-width: auto; padding-top: 0; }
             .expertise-grid { grid-template-columns: 1fr; }
+            .advisory-grid { grid-template-columns: 1fr; }
             .highlights-grid { grid-template-columns: 1fr; }
+            .nonprofit-grid { grid-template-columns: 1fr; }
             .hero-cta { flex-direction: column; align-items: center; }
         }
     </style>
@@ -875,9 +877,8 @@
         <div class="ambient-glow glow-1"></div>
         <div class="ambient-glow glow-2"></div>
         <div class="hero-inner">
-            <!-- REPLACE src with your headshot: e.g. "images/headshot.jpg" -->
             <img src="images/portrait.png" alt="Carlos Enrique Mattus" class="hero-headshot">
-            <!---
+            <!--
             <div class="hero-tag">
                 <span class="dot"></span>
                 Open to opportunities
@@ -1077,7 +1078,6 @@
             </p>
             <div class="advisory-grid">
                 <div class="advisory-card">
-                    <!-- REPLACE with Virtuals logo: save as images/logo-virtuals.png -->
                     <img src="images/logo-virtuals.png" alt="Virtuals Protocol" class="adv-logo">
                     <span class="adv-role">Adviser &middot; Since 2021</span>
                     <h3><a href="https://www.virtuals.io/" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;border-bottom:1px solid rgba(255,255,255,0.15);">Virtuals Protocol</a></h3>
@@ -1085,7 +1085,6 @@
                     <span class="adv-tag">AI Agents &middot; $5B Peak Cap</span>
                 </div>
                 <div class="advisory-card">
-                    <!-- REPLACE with AI Club logo: save as images/logo-aiclub.png -->
                     <img src="images/logo-aiclub.png" alt="Artificial Intelligence Club" class="adv-logo">
                     <span class="adv-role">Head of Strategy &amp; Intelligence</span>
                     <h3>Artificial Intelligence Club</h3>
@@ -1093,7 +1092,6 @@
                     <span class="adv-tag">AI Strategy &middot; Community</span>
                 </div>
                 <div class="advisory-card">
-                    <!-- REPLACE with Treasure logo: save as images/logo-treasure.png -->
                     <img src="images/logo-treasure.png" alt="Treasure" class="adv-logo">
                     <span class="adv-role">PH Ambassador &middot; Since 2024</span>
                     <h3><a href="https://treasure.lol/" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;border-bottom:1px solid rgba(255,255,255,0.15);">Treasure</a></h3>
@@ -1101,7 +1099,6 @@
                     <span class="adv-tag">AI Gaming &middot; $MAGIC</span>
                 </div>
                 <div class="advisory-card">
-                    <!-- REPLACE with ElizaOS logo: save as images/logo-elizaos.png -->
                     <img src="images/logo-elizaos.png" alt="ElizaOS" class="adv-logo">
                     <span class="adv-role">Contributor &middot; Since 2023</span>
                     <h3><a href="https://elizaos.ai/" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;border-bottom:1px solid rgba(255,255,255,0.15);">ElizaOS</a></h3>
@@ -1151,7 +1148,6 @@
                 Using technology and leadership to create impact beyond the workplace.
             </p>
             <div class="nonprofit-grid">
-                <!-- REPLACE background-image URLs with your actual photos -->
                 <div class="nonprofit-card" style="background-image: url('images/jci-manila.png');">
                     <div class="np-icon">&#127758;</div>
                     <h3>JCI Manila</h3>
@@ -1173,7 +1169,6 @@
             </div>
         </div>
     </section>
-
 
     <!-- FOOTER -->
     <footer>
