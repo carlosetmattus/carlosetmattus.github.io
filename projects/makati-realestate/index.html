@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Makati Real Estate Scoring — Telco Intelligence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #080b10;
+      --bg2: #0e1219;
+      --bg3: #141820;
+      --border: #1e2530;
+      --text: #e8edf5;
+      --muted: #6b7585;
+      --dim: #3a4255;
+      --cyan: #00e5c8;
+      --blue: #3b82f6;
+      --purple: #8b5cf6;
+      --amber: #f59e0b;
+      --green: #22c55e;
+      --red: #ef4444;
+      --font: 'DM Sans', sans-serif;
+      --mono: 'DM Mono', monospace;
+    }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Header ── */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 28px;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg2);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 15px;
+      letter-spacing: .02em;
+    }
+    .logo-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--cyan);
+      box-shadow: 0 0 8px var(--cyan);
+    }
+    .logo span { color: var(--cyan); }
+    .header-meta {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      font-size: 12px;
+      color: var(--muted);
+      font-family: var(--mono);
+    }
+    .live-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(34,197,94,.12);
+      border: 1px solid rgba(34,197,94,.25);
+      color: var(--green);
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .live-badge::before {
+      content: '';
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--green);
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: .3; }
+    }
+
+    /* ── Layout ── */
+    .shell {
+      display: grid;
+      grid-template-columns: 340px 1fr;
+      flex: 1;
+      height: calc(100vh - 53px);
+      overflow: hidden;
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      background: var(--bg2);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+    .sidebar::-webkit-scrollbar { width: 4px; }
+    .sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+    .zone-list-header {
+      padding: 16px 20px 12px;
+      border-bottom: 1px solid var(--border);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .zone-search {
+      margin: 12px 16px 0;
+      position: relative;
+    }
+    .zone-search input {
+      width: 100%;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 12px 8px 32px;
+      color: var(--text);
+      font-family: var(--font);
+      font-size: 13px;
+      outline: none;
+    }
+    .zone-search input:focus { border-color: var(--cyan); }
+    .zone-search::before {
+      content: '⌕';
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      font-size: 16px;
+    }
+
+    .zone-item {
+      padding: 12px 16px;
+      cursor: pointer;
+      border-bottom: 1px solid var(--border);
+      transition: background .15s;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .zone-item:hover { background: var(--bg3); }
+    .zone-item.active { background: rgba(0,229,200,.06); border-left: 3px solid var(--cyan); }
+
+    .score-ring {
+      flex-shrink: 0;
+      width: 42px; height: 42px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 13px;
+      font-family: var(--mono);
+      border: 2px solid;
+    }
+    .score-ring.s-high { border-color: var(--green); color: var(--green); background: rgba(34,197,94,.08); }
+    .score-ring.s-mid  { border-color: var(--amber); color: var(--amber); background: rgba(245,158,11,.08); }
+    .score-ring.s-low  { border-color: var(--red);   color: var(--red);   background: rgba(239,68,68,.08); }
+
+    .zone-info { flex: 1; min-width: 0; }
+    .zone-name { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .zone-sub  { font-size: 11px; color: var(--muted); margin-top: 2px; }
+    .zone-bar  { height: 3px; border-radius: 2px; margin-top: 6px; background: var(--border); }
+    .zone-bar-fill { height: 100%; border-radius: 2px; transition: width .4s; }
+
+    /* ── Main ── */
+    .main {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ── Scorecard top bar ── */
+    .scorecard-bar {
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      background: var(--bg2);
+      flex-shrink: 0;
+    }
+    .scorecard-title { flex: 1; }
+    .scorecard-title h2 { font-size: 18px; font-weight: 700; }
+    .scorecard-title p { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+    .big-score {
+      text-align: center;
+    }
+    .big-score .num {
+      font-size: 48px;
+      font-weight: 700;
+      font-family: var(--mono);
+      line-height: 1;
+    }
+    .big-score .label {
+      font-size: 10px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+    .score-high { color: var(--green); }
+    .score-mid  { color: var(--amber); }
+    .score-low  { color: var(--red); }
+
+    .kpi-row {
+      display: flex;
+      gap: 1px;
+      background: var(--border);
+      flex-shrink: 0;
+    }
+    .kpi {
+      flex: 1;
+      background: var(--bg2);
+      padding: 14px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .kpi-val {
+      font-size: 22px;
+      font-weight: 700;
+      font-family: var(--mono);
+      color: var(--cyan);
+    }
+    .kpi-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+    .kpi-delta { font-size: 11px; font-family: var(--mono); }
+    .up { color: var(--green); }
+    .dn { color: var(--red); }
+
+    /* ── Chart grid ── */
+    .charts-grid {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px 24px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto auto auto;
+      gap: 16px;
+    }
+    .charts-grid::-webkit-scrollbar { width: 4px; }
+    .charts-grid::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+    .card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .card.full-width { grid-column: 1 / -1; }
+    .card h3 { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+    .chart-wrap { position: relative; height: 180px; }
+    .chart-wrap.tall { height: 220px; }
+
+    /* ── Sub-score bars ── */
+    .subscore-list { display: flex; flex-direction: column; gap: 10px; }
+    .subscore-row { display: flex; flex-direction: column; gap: 4px; }
+    .subscore-header { display: flex; justify-content: space-between; font-size: 12px; }
+    .subscore-name { color: var(--text); }
+    .subscore-val { font-family: var(--mono); font-weight: 600; }
+    .bar-track { height: 6px; background: var(--bg3); border-radius: 3px; }
+    .bar-fill { height: 100%; border-radius: 3px; transition: width .5s ease; }
+
+    /* ── Hourly heatmap ── */
+    .heatmap-grid {
+      display: grid;
+      grid-template-columns: 40px repeat(24, 1fr);
+      gap: 2px;
+      font-size: 10px;
+      color: var(--muted);
+    }
+    .hm-cell {
+      height: 22px;
+      border-radius: 3px;
+      cursor: default;
+      position: relative;
+    }
+    .hm-cell:hover::after {
+      content: attr(data-tip);
+      position: absolute;
+      bottom: 26px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      white-space: nowrap;
+      pointer-events: none;
+      z-index: 10;
+      color: var(--text);
+    }
+    .hm-label { display: flex; align-items: center; justify-content: flex-end; padding-right: 6px; }
+    .hm-hour { display: flex; align-items: center; justify-content: center; }
+
+    /* ── Map ── */
+    #map {
+      height: 100%;
+      border-radius: 8px;
+    }
+    .map-wrap { height: 320px; border-radius: 8px; overflow: hidden; }
+
+    /* ── Compare panel ── */
+    .compare-btn {
+      margin: 12px 16px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--cyan);
+      font-family: var(--font);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 8px 14px;
+      cursor: pointer;
+      width: calc(100% - 32px);
+      text-align: center;
+      transition: background .15s;
+    }
+    .compare-btn:hover { background: rgba(0,229,200,.08); }
+
+    .tag {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 10px;
+      letter-spacing: .04em;
+    }
+    .tag-green { background: rgba(34,197,94,.15); color: var(--green); }
+    .tag-amber { background: rgba(245,158,11,.15); color: var(--amber); }
+    .tag-red   { background: rgba(239,68,68,.15);  color: var(--red); }
+    .tag-blue  { background: rgba(59,130,246,.15); color: var(--blue); }
+
+    .confidence-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--muted);
+      padding: 8px 0;
+      border-top: 1px solid var(--border);
+    }
+    .confidence-row strong { color: var(--text); }
+
+    .footer {
+      padding: 10px 24px;
+      border-top: 1px solid var(--border);
+      font-size: 11px;
+      color: var(--dim);
+      display: flex;
+      justify-content: space-between;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-dot"></div>
+    Telco<span>Intel</span> &nbsp;·&nbsp; Real Estate Scoring
+  </div>
+  <div class="header-meta">
+    <span>Makati City, Metro Manila, PH</span>
+    <span>Ref period: Jan–Mar 2026</span>
+    <div class="live-badge">LIVE DATA</div>
+  </div>
+</header>
+
+<div class="shell">
+
+  <!-- ── Sidebar ── -->
+  <aside class="sidebar">
+    <div class="zone-list-header">Makati Districts &amp; Zones</div>
+    <div class="zone-search"><input type="text" id="searchInput" placeholder="Search zone…" oninput="filterZones()" /></div>
+    <button class="compare-btn" onclick="alert('Compare mode: select 2 zones from the list (coming soon)')">⇄ Compare Locations</button>
+    <div id="zoneList"></div>
+  </aside>
+
+  <!-- ── Main panel ── -->
+  <div class="main">
+    <div class="scorecard-bar">
+      <div class="scorecard-title">
+        <h2 id="zoneName">Select a zone</h2>
+        <p id="zoneDesc">Click any district on the left to load its scoring.</p>
+      </div>
+      <div>
+        <span id="zoneTag" class="tag tag-blue" style="display:none"></span>
+      </div>
+      <div class="big-score">
+        <div class="num" id="bigScore">—</div>
+        <div class="label">Location Score</div>
+      </div>
+    </div>
+
+    <div class="kpi-row">
+      <div class="kpi">
+        <div class="kpi-val" id="kpi1">—</div>
+        <div class="kpi-label">Daily Footfall</div>
+        <div class="kpi-delta" id="kpi1d"></div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-val" id="kpi2">—</div>
+        <div class="kpi-label">Avg Dwell Time</div>
+        <div class="kpi-delta" id="kpi2d"></div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-val" id="kpi3">—</div>
+        <div class="kpi-label">Repeat Visit Rate</div>
+        <div class="kpi-delta" id="kpi3d"></div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-val" id="kpi4">—</div>
+        <div class="kpi-label">Unique Devices / mo</div>
+        <div class="kpi-delta" id="kpi4d"></div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-val" id="kpi5">—</div>
+        <div class="kpi-label">Catchment Radius</div>
+        <div class="kpi-delta" id="kpi5d"></div>
+      </div>
+    </div>
+
+    <div class="charts-grid">
+
+      <!-- Sub-scores -->
+      <div class="card">
+        <h3>Score Breakdown</h3>
+        <div class="subscore-list" id="subscoreList"></div>
+      </div>
+
+      <!-- Demographic radar -->
+      <div class="card">
+        <h3>Visitor Demographics</h3>
+        <div class="chart-wrap">
+          <canvas id="radarChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Footfall trend -->
+      <div class="card full-width">
+        <h3>Footfall Trend — Last 90 Days</h3>
+        <div class="chart-wrap tall">
+          <canvas id="footfallChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Hourly heatmap -->
+      <div class="card full-width">
+        <h3>Hourly Traffic Heatmap — Day of Week × Hour</h3>
+        <div id="heatmapContainer"></div>
+      </div>
+
+      <!-- Catchment map -->
+      <div class="card full-width">
+        <h3>Visitor Catchment Map</h3>
+        <div class="map-wrap" id="mapWrap">
+          <div id="map"></div>
+        </div>
+        <div class="confidence-row">
+          <span>Data confidence: <strong id="confVal">—</strong> &nbsp;·&nbsp; Devices sampled: <strong id="devSampled">—</strong> &nbsp;·&nbsp; Ref period: Jan–Mar 2026</span>
+          <span class="tag tag-blue">CDR-derived · Anonymised · Aggregated</span>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="footer">
+      <span>TelcoIntel Real Estate Scoring &nbsp;·&nbsp; Powered by anonymised CDR &amp; network signal data &nbsp;·&nbsp; Makati City pilot</span>
+      <span>© 2026 — Demo / synthetic data only</span>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─────────────────────────────────────────────
+//  DUMMY DATA — Makati City zones
+// ─────────────────────────────────────────────
+const ZONES = [
+  {
+    id: 'bgc-fringe',
+    name: 'BGC Fringe / Kalayaan',
+    desc: 'High-density mixed-use corridor adjacent to BGC',
+    type: 'Mixed-Use',
+    score: 88,
+    subscores: { Footfall: 91, Demographics: 86, Dwell: 82, Competition: 78, Catchment: 94 },
+    kpis: { footfall: '42,800', dwell: '38 min', repeat: '61%', devices: '128k', catchment: '4.2 km' },
+    deltas: { footfall: '+8%', dwell: '+5 min', repeat: '+4%', devices: '+11%', catchment: '↔' },
+    colors: { footfall: 'up', dwell: 'up', repeat: 'up', devices: 'up', catchment: '' },
+    lat: 14.5631, lng: 121.0270,
+    tag: 'Prime', tagClass: 'tag-green',
+    confidence: '97%', devSampled: '128,450',
+  },
+  {
+    id: 'makati-cbd',
+    name: 'Makati CBD Core',
+    desc: 'Ayala Ave corridor — flagship commercial district',
+    type: 'CBD',
+    score: 95,
+    subscores: { Footfall: 97, Demographics: 94, Dwell: 91, Competition: 72, Catchment: 98 },
+    kpis: { footfall: '78,500', dwell: '52 min', repeat: '74%', devices: '245k', catchment: '8.1 km' },
+    deltas: { footfall: '+12%', dwell: '+9 min', repeat: '+6%', devices: '+18%', catchment: '+0.4 km' },
+    colors: { footfall: 'up', dwell: 'up', repeat: 'up', devices: 'up', catchment: 'up' },
+    lat: 14.5547, lng: 121.0244,
+    tag: 'Top Tier', tagClass: 'tag-green',
+    confidence: '99%', devSampled: '245,100',
+  },
+  {
+    id: 'greenbelt',
+    name: 'Greenbelt / Legazpi Village',
+    desc: 'Premium lifestyle & retail district',
+    type: 'Retail',
+    score: 92,
+    subscores: { Footfall: 93, Demographics: 96, Dwell: 94, Competition: 68, Catchment: 90 },
+    kpis: { footfall: '65,200', dwell: '61 min', repeat: '69%', devices: '210k', catchment: '7.3 km' },
+    deltas: { footfall: '+9%', dwell: '+12 min', repeat: '+3%', devices: '+14%', catchment: '+0.2 km' },
+    colors: { footfall: 'up', dwell: 'up', repeat: 'up', devices: 'up', catchment: 'up' },
+    lat: 14.5583, lng: 121.0213,
+    tag: 'Top Tier', tagClass: 'tag-green',
+    confidence: '98%', devSampled: '210,320',
+  },
+  {
+    id: 'rockwell',
+    name: 'Rockwell Center',
+    desc: 'Upscale enclave — Power Plant Mall anchor',
+    type: 'Lifestyle',
+    score: 89,
+    subscores: { Footfall: 84, Demographics: 97, Dwell: 93, Competition: 88, Catchment: 82 },
+    kpis: { footfall: '38,100', dwell: '66 min', repeat: '72%', devices: '95k', catchment: '5.8 km' },
+    deltas: { footfall: '+5%', dwell: '+14 min', repeat: '+7%', devices: '+8%', catchment: '↔' },
+    colors: { footfall: 'up', dwell: 'up', repeat: 'up', devices: 'up', catchment: '' },
+    lat: 14.5635, lng: 121.0337,
+    tag: 'Premium', tagClass: 'tag-green',
+    confidence: '96%', devSampled: '95,780',
+  },
+  {
+    id: 'poblacion',
+    name: 'Poblacion',
+    desc: 'Emerging F&B and nightlife district — rapid growth',
+    type: 'Entertainment',
+    score: 76,
+    subscores: { Footfall: 78, Demographics: 72, Dwell: 88, Competition: 55, Catchment: 74 },
+    kpis: { footfall: '28,400', dwell: '74 min', repeat: '58%', devices: '72k', catchment: '3.9 km' },
+    deltas: { footfall: '+21%', dwell: '+18 min', repeat: '+11%', devices: '+28%', catchment: '+0.6 km' },
+    colors: { footfall: 'up', dwell: 'up', repeat: 'up', devices: 'up', catchment: 'up' },
+    lat: 14.5660, lng: 121.0347,
+    tag: 'High Growth', tagClass: 'tag-amber',
+    confidence: '91%', devSampled: '72,100',
+  },
+  {
+    id: 'salcedo',
+    name: 'Salcedo Village',
+    desc: 'Residential-commercial mix, weekend market hub',
+    type: 'Mixed-Use',
+    score: 71,
+    subscores: { Footfall: 68, Demographics: 79, Dwell: 71, Competition: 74, Catchment: 66 },
+    kpis: { footfall: '19,700', dwell: '29 min', repeat: '52%', devices: '54k', catchment: '3.1 km' },
+    deltas: { footfall: '+3%', dwell: '-2 min', repeat: '-1%', devices: '+4%', catchment: '↔' },
+    colors: { footfall: 'up', dwell: 'dn', repeat: 'dn', devices: 'up', catchment: '' },
+    lat: 14.5600, lng: 121.0222,
+    tag: 'Moderate', tagClass: 'tag-blue',
+    confidence: '89%', devSampled: '54,230',
+  },
+  {
+    id: 'bel-air',
+    name: 'Bel-Air Village',
+    desc: 'Gated residential enclave, low commercial density',
+    type: 'Residential',
+    score: 44,
+    subscores: { Footfall: 38, Demographics: 62, Dwell: 45, Competition: 82, Catchment: 41 },
+    kpis: { footfall: '6,200', dwell: '18 min', repeat: '38%', devices: '18k', catchment: '1.4 km' },
+    deltas: { footfall: '-2%', dwell: '-3 min', repeat: '-2%', devices: '-1%', catchment: '↔' },
+    colors: { footfall: 'dn', dwell: 'dn', repeat: 'dn', devices: 'dn', catchment: '' },
+    lat: 14.5568, lng: 121.0280,
+    tag: 'Low Activity', tagClass: 'tag-red',
+    confidence: '82%', devSampled: '18,440',
+  },
+  {
+    id: 'guadalupe',
+    name: 'Guadalupe Viejo',
+    desc: 'Transit-adjacent emerging zone near MRT station',
+    type: 'Transit Hub',
+    score: 63,
+    subscores: { Footfall: 71, Demographics: 55, Dwell: 48, Competition: 60, Catchment: 72 },
+    kpis: { footfall: '31,500', dwell: '14 min', repeat: '44%', devices: '88k', catchment: '4.8 km' },
+    deltas: { footfall: '+14%', dwell: '+1 min', repeat: '+2%', devices: '+16%', catchment: '+0.3 km' },
+    colors: { footfall: 'up', dwell: 'up', repeat: 'up', devices: 'up', catchment: 'up' },
+    lat: 14.5680, lng: 121.0430,
+    tag: 'Transit', tagClass: 'tag-blue',
+    confidence: '93%', devSampled: '88,020',
+  },
+  {
+    id: 'circuit',
+    name: 'Circuit Makati',
+    desc: 'New entertainment & events complex',
+    type: 'Entertainment',
+    score: 69,
+    subscores: { Footfall: 72, Demographics: 68, Dwell: 79, Competition: 61, Catchment: 67 },
+    kpis: { footfall: '22,800', dwell: '83 min', repeat: '47%', devices: '61k', catchment: '3.6 km' },
+    deltas: { footfall: '+31%', dwell: '+22 min', repeat: '+9%', devices: '+38%', catchment: '+1.1 km' },
+    colors: { footfall: 'up', dwell: 'up', repeat: 'up', devices: 'up', catchment: 'up' },
+    lat: 14.5490, lng: 121.0320,
+    tag: 'Emerging', tagClass: 'tag-amber',
+    confidence: '88%', devSampled: '61,570',
+  },
+  {
+    id: 'chino-roces',
+    name: 'Chino Roces Ave',
+    desc: 'Furniture row & B2B commercial strip',
+    type: 'Commercial',
+    score: 57,
+    subscores: { Footfall: 60, Demographics: 50, Dwell: 55, Competition: 65, Catchment: 58 },
+    kpis: { footfall: '14,300', dwell: '24 min', repeat: '41%', devices: '38k', catchment: '2.7 km' },
+    deltas: { footfall: '+1%', dwell: '↔', repeat: '-1%', devices: '+2%', catchment: '↔' },
+    colors: { footfall: 'up', dwell: '', repeat: 'dn', devices: 'up', catchment: '' },
+    lat: 14.5530, lng: 121.0180,
+    tag: 'Stable', tagClass: 'tag-blue',
+    confidence: '85%', devSampled: '38,110',
+  },
+];
+
+// ─────────────────────────────────────────────
+//  Chart instances
+// ─────────────────────────────────────────────
+let footfallChart = null;
+let radarChart = null;
+let leafletMap = null;
+let mapCircles = [];
+
+// ─────────────────────────────────────────────
+//  Render zone list
+// ─────────────────────────────────────────────
+function scoreClass(s) {
+  return s >= 75 ? 's-high' : s >= 55 ? 's-mid' : 's-low';
+}
+function scoreColor(s) {
+  return s >= 75 ? 'var(--green)' : s >= 55 ? 'var(--amber)' : 'var(--red)';
+}
+
+function renderList(zones) {
+  const el = document.getElementById('zoneList');
+  el.innerHTML = zones.map(z => `
+    <div class="zone-item" id="zi-${z.id}" onclick="selectZone('${z.id}')">
+      <div class="score-ring ${scoreClass(z.score)}">${z.score}</div>
+      <div class="zone-info">
+        <div class="zone-name">${z.name}</div>
+        <div class="zone-sub">${z.type} &nbsp;·&nbsp; ${z.desc.substring(0,38)}…</div>
+        <div class="zone-bar">
+          <div class="zone-bar-fill" style="width:${z.score}%;background:${scoreColor(z.score)}"></div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function filterZones() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  renderList(ZONES.filter(z => z.name.toLowerCase().includes(q) || z.type.toLowerCase().includes(q)));
+}
+
+renderList(ZONES);
+
+// ─────────────────────────────────────────────
+//  Generate footfall trend (90 days)
+// ─────────────────────────────────────────────
+function genFootfall(base, growth) {
+  const labels = [], data = [];
+  const now = new Date('2026-03-28');
+  for (let i = 89; i >= 0; i--) {
+    const d = new Date(now); d.setDate(d.getDate() - i);
+    labels.push(d.toLocaleDateString('en-PH', { month: 'short', day: 'numeric' }));
+    const dayOfWeek = d.getDay();
+    const weekendBoost = (dayOfWeek === 0 || dayOfWeek === 6) ? 1.35 : 1;
+    const trend = 1 + (growth / 100) * ((89 - i) / 89);
+    const noise = 0.85 + Math.random() * 0.3;
+    data.push(Math.round(base * weekendBoost * trend * noise));
+  }
+  return { labels, data };
+}
+
+function growthFromDelta(deltaStr) {
+  const m = deltaStr.match(/([+-]?\d+)/);
+  return m ? parseInt(m[1]) : 0;
+}
+
+// ─────────────────────────────────────────────
+//  Generate hourly heatmap data
+// ─────────────────────────────────────────────
+function genHeatmap(baseFootfall) {
+  const days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const patterns = {
+    Mon:  [.02,.01,.01,.01,.02,.04,.08,.12,.14,.13,.11,.10,.09,.08,.09,.10,.12,.13,.11,.08,.05,.03,.02,.01],
+    Tue:  [.02,.01,.01,.01,.02,.04,.08,.12,.14,.13,.11,.10,.09,.08,.09,.10,.12,.13,.11,.08,.05,.03,.02,.01],
+    Wed:  [.02,.01,.01,.01,.02,.04,.08,.12,.14,.13,.11,.10,.09,.08,.09,.10,.12,.14,.12,.08,.05,.03,.02,.01],
+    Thu:  [.02,.01,.01,.01,.02,.04,.08,.12,.14,.13,.11,.10,.09,.08,.09,.10,.12,.14,.13,.09,.06,.04,.02,.01],
+    Fri:  [.02,.01,.01,.01,.02,.04,.08,.12,.14,.13,.11,.10,.09,.08,.09,.10,.11,.12,.13,.12,.09,.06,.04,.02],
+    Sat:  [.01,.01,.01,.01,.01,.02,.04,.07,.10,.13,.14,.14,.13,.12,.13,.14,.14,.13,.11,.09,.07,.05,.03,.02],
+    Sun:  [.01,.01,.01,.01,.01,.02,.03,.06,.09,.11,.13,.14,.14,.13,.12,.11,.10,.09,.08,.07,.05,.03,.02,.01],
+  };
+  return { days, patterns, base: baseFootfall };
+}
+
+function hmColor(ratio) {
+  if (ratio < .04) return `rgba(30,37,50,0.8)`;
+  const r = Math.min(ratio * 7, 1);
+  if (r < .33) return `rgba(59,130,246,${0.3+r*1.5})`;
+  if (r < .66) return `rgba(0,229,200,${0.4+r})`;
+  return `rgba(245,158,11,${0.5+r*.5})`;
+}
+
+function renderHeatmap(z) {
+  const container = document.getElementById('heatmapContainer');
+  const hm = genHeatmap(parseInt(z.kpis.footfall.replace(/,/g,'')));
+  const hours = Array.from({length:24},(_,i)=> i < 10 ? '0'+i : ''+i);
+
+  let html = `<div class="heatmap-grid">`;
+  // header row
+  html += `<div class="hm-label" style="height:18px"></div>`;
+  hours.forEach(h => html += `<div class="hm-hour" style="height:18px;font-size:9px;color:var(--muted)">${h}</div>`);
+
+  hm.days.forEach(day => {
+    html += `<div class="hm-label">${day}</div>`;
+    hm.patterns[day].forEach((v, hi) => {
+      const count = Math.round(hm.base * v * (0.9 + Math.random()*.2));
+      html += `<div class="hm-cell" style="background:${hmColor(v)}" data-tip="${day} ${hours[hi]}:00 · ~${count.toLocaleString()} visitors"></div>`;
+    });
+  });
+  html += `</div>`;
+  container.innerHTML = html;
+}
+
+// ─────────────────────────────────────────────
+//  Render sub-scores
+// ─────────────────────────────────────────────
+const subscoreColors = {
+  Footfall:    'var(--cyan)',
+  Demographics:'var(--purple)',
+  Dwell:       'var(--amber)',
+  Competition: 'var(--blue)',
+  Catchment:   'var(--green)',
+};
+
+function renderSubscores(z) {
+  const el = document.getElementById('subscoreList');
+  el.innerHTML = Object.entries(z.subscores).map(([k,v]) => `
+    <div class="subscore-row">
+      <div class="subscore-header">
+        <span class="subscore-name">${k}</span>
+        <span class="subscore-val" style="color:${subscoreColors[k]}">${v}</span>
+      </div>
+      <div class="bar-track">
+        <div class="bar-fill" style="width:${v}%;background:${subscoreColors[k]}"></div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ─────────────────────────────────────────────
+//  Main select zone
+// ─────────────────────────────────────────────
+function selectZone(id) {
+  const z = ZONES.find(z => z.id === id);
+  if (!z) return;
+
+  // sidebar active
+  document.querySelectorAll('.zone-item').forEach(el => el.classList.remove('active'));
+  const zi = document.getElementById('zi-'+id);
+  if (zi) zi.classList.add('active');
+
+  // header
+  document.getElementById('zoneName').textContent = z.name;
+  document.getElementById('zoneDesc').textContent = z.desc;
+  const tagEl = document.getElementById('zoneTag');
+  tagEl.textContent = z.tag;
+  tagEl.className = 'tag ' + z.tagClass;
+  tagEl.style.display = 'inline-block';
+
+  // big score
+  const bs = document.getElementById('bigScore');
+  bs.textContent = z.score;
+  bs.className = 'num ' + (z.score >= 75 ? 'score-high' : z.score >= 55 ? 'score-mid' : 'score-low');
+
+  // KPIs
+  const kkeys = ['footfall','dwell','repeat','devices','catchment'];
+  const kvals = [z.kpis.footfall, z.kpis.dwell, z.kpis.repeat, z.kpis.devices, z.kpis.catchment];
+  const kd    = [z.deltas.footfall, z.deltas.dwell, z.deltas.repeat, z.deltas.devices, z.deltas.catchment];
+  const kc    = [z.colors.footfall, z.colors.dwell, z.colors.repeat, z.colors.devices, z.colors.catchment];
+  kkeys.forEach((_, i) => {
+    document.getElementById(`kpi${i+1}`).textContent = kvals[i];
+    document.getElementById(`kpi${i+1}d`).textContent = kd[i];
+    document.getElementById(`kpi${i+1}d`).className = 'kpi-delta ' + kc[i];
+  });
+
+  // confidence
+  document.getElementById('confVal').textContent = z.confidence;
+  document.getElementById('devSampled').textContent = z.devSampled;
+
+  // sub-scores
+  renderSubscores(z);
+
+  // footfall chart
+  const baseVal = parseInt(z.kpis.footfall.replace(/,/g,''));
+  const growth = growthFromDelta(z.deltas.footfall);
+  const { labels, data } = genFootfall(baseVal, growth);
+
+  if (footfallChart) footfallChart.destroy();
+  const ctx1 = document.getElementById('footfallChart').getContext('2d');
+  const grad = ctx1.createLinearGradient(0, 0, 0, 200);
+  grad.addColorStop(0, 'rgba(0,229,200,0.25)');
+  grad.addColorStop(1, 'rgba(0,229,200,0)');
+  footfallChart = new Chart(ctx1, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        data,
+        borderColor: 'rgba(0,229,200,0.9)',
+        backgroundColor: grad,
+        borderWidth: 2,
+        pointRadius: 0,
+        tension: 0.4,
+        fill: true,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: {
+        backgroundColor: '#141820', borderColor: '#1e2530', borderWidth: 1,
+        titleColor: '#6b7585', bodyColor: '#e8edf5',
+        callbacks: { label: ctx => ` ${ctx.parsed.y.toLocaleString()} visitors` }
+      }},
+      scales: {
+        x: { grid: { color: '#1e2530' }, ticks: { color: '#6b7585', maxTicksLimit: 12, font: { family: 'DM Mono', size: 10 } } },
+        y: { grid: { color: '#1e2530' }, ticks: { color: '#6b7585', font: { family: 'DM Mono', size: 10 }, callback: v => v.toLocaleString() } },
+      }
+    }
+  });
+
+  // radar chart
+  const radarLabels = ['Young Adults\n(18-34)', 'Mid Income', 'High Income', 'Daily Commuters', 'Weekend Visitors', 'Tourists'];
+  const radarSeed = z.subscores.Demographics;
+  const radarData = radarLabels.map((_, i) => {
+    const base = [radarSeed*.95, radarSeed*.8, radarSeed*.7, radarSeed*.9, radarSeed*.85, radarSeed*.6];
+    return Math.min(100, Math.round(base[i] * (0.85 + Math.random()*.3)));
+  });
+
+  if (radarChart) radarChart.destroy();
+  const ctx2 = document.getElementById('radarChart').getContext('2d');
+  radarChart = new Chart(ctx2, {
+    type: 'radar',
+    data: {
+      labels: ['18–34 yr', 'Mid Income', 'High Income', 'Commuters', 'Weekend', 'Tourist'],
+      datasets: [{
+        data: radarData,
+        borderColor: 'rgba(139,92,246,0.8)',
+        backgroundColor: 'rgba(139,92,246,0.15)',
+        borderWidth: 2,
+        pointBackgroundColor: 'rgba(139,92,246,1)',
+        pointRadius: 3,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        r: {
+          min: 0, max: 100,
+          grid: { color: '#1e2530' },
+          angleLines: { color: '#1e2530' },
+          ticks: { display: false },
+          pointLabels: { color: '#9ba3b5', font: { family: 'DM Sans', size: 10 } },
+        }
+      }
+    }
+  });
+
+  // heatmap
+  renderHeatmap(z);
+
+  // map
+  updateMap(z);
+}
+
+// ─────────────────────────────────────────────
+//  Leaflet map
+// ─────────────────────────────────────────────
+function initMap() {
+  leafletMap = L.map('map', { zoomControl: true, attributionControl: false }).setView([14.560, 121.026], 14);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    maxZoom: 18,
+  }).addTo(leafletMap);
+}
+
+function updateMap(z) {
+  // clear old circles
+  mapCircles.forEach(c => c.remove());
+  mapCircles = [];
+
+  leafletMap.setView([z.lat, z.lng], 14);
+
+  // catchment radius circle
+  const catchKm = parseFloat(z.kpis.catchment) || 3;
+  const circle = L.circle([z.lat, z.lng], {
+    radius: catchKm * 1000,
+    color: 'rgba(0,229,200,0.6)',
+    fillColor: 'rgba(0,229,200,0.05)',
+    fillOpacity: 1,
+    weight: 1.5,
+  }).addTo(leafletMap);
+
+  // main marker
+  const marker = L.circleMarker([z.lat, z.lng], {
+    radius: 10,
+    color: 'var(--cyan)',
+    fillColor: 'rgba(0,229,200,0.4)',
+    fillOpacity: 1,
+    weight: 2,
+  }).addTo(leafletMap)
+    .bindPopup(`<b>${z.name}</b><br>Score: ${z.score} &nbsp;·&nbsp; ${z.type}`);
+
+  // add sub-origin dots (fake home locations of visitors)
+  const numDots = 18;
+  for (let i = 0; i < numDots; i++) {
+    const angle = Math.random() * 2 * Math.PI;
+    const dist  = (0.3 + Math.random() * 0.9) * catchKm / 111;
+    const dlat  = z.lat + dist * Math.cos(angle);
+    const dlng  = z.lng + dist * Math.sin(angle) / Math.cos(z.lat * Math.PI / 180);
+    const size  = 3 + Math.random() * 4;
+    const dot   = L.circleMarker([dlat, dlng], {
+      radius: size,
+      color: 'transparent',
+      fillColor: 'rgba(139,92,246,0.6)',
+      fillOpacity: 0.7,
+      weight: 0,
+    }).addTo(leafletMap);
+    mapCircles.push(dot);
+  }
+
+  mapCircles.push(circle, marker);
+}
+
+// ─────────────────────────────────────────────
+//  Init
+// ─────────────────────────────────────────────
+initMap();
+// Auto-select top zone
+selectZone('makati-cbd');
+</script>
+</body>
+</html>
