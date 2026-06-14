@@ -11,13 +11,14 @@
     <style>
         :root {
             --bg: #000000;
-            --bg-surface: #0a0a0a;
-            --bg-card: #111111;
-            --border: #1e1e1e;
-            --border-mid: #333333;
-            --text-primary: #ffffff;
-            --text-secondary: #777777;
-            --text-muted: #3d3d3d;
+            --bg-surface: #0d0908;
+            --bg-card: #141009;
+            --border: #2a1a15;
+            --border-mid: #4d2e25;
+            --text-primary: #f5ede8;
+            --text-secondary: #8a6f68;
+            --text-muted: #4a3330;
+            --accent: #c4867a;
             --font-display: 'Instrument Serif', Georgia, serif;
             --font-body: 'DM Sans', sans-serif;
         }
@@ -42,7 +43,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(0,0,0,0.9);
+            background: rgba(0,0,0,0.92);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border-bottom: 1px solid var(--border);
@@ -84,25 +85,63 @@
         .hero {
             min-height: 100vh;
             display: flex;
+            align-items: stretch;
+            padding-top: 68px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .hero-text {
+            flex: 1;
+            display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             text-align: center;
-            padding: 8rem 3rem 5rem;
+            padding: 5rem 3rem 5rem;
             position: relative;
-            border-bottom: 1px solid var(--border);
         }
 
-        /* Portrait-ready: uncomment img tag and add this class when photo is ready */
-        .hero.has-portrait {
-            padding: 0;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            text-align: left;
-            align-items: stretch;
+        .hero-portrait {
+            width: 42%;
+            flex-shrink: 0;
+            position: relative;
+            background: var(--bg-surface);
+            overflow: hidden;
+            display: none;
         }
-        .hero.has-portrait .hero-text { padding: 8rem 4rem 5rem 3rem; border-right: 1px solid var(--border); justify-content: center; display: flex; flex-direction: column; }
-        .hero.has-portrait .hero-subtitle { margin-left: 0; }
+        .hero-portrait img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: top center;
+            filter: grayscale(100%) contrast(1.1) brightness(0.8);
+        }
+        .hero-portrait-label {
+            position: absolute;
+            bottom: 2.5rem;
+            right: 1.5rem;
+            font-size: 0.62rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            transform: rotate(180deg);
+        }
+
+        .hero.has-portrait .hero-portrait { display: block; }
+        .hero.has-portrait .hero-text {
+            align-items: flex-start;
+            text-align: left;
+            padding: 5rem 4rem 5rem 3rem;
+            border-right: 1px solid var(--border);
+        }
+        .hero.has-portrait .hero-eyebrow { justify-content: flex-start; }
+        .hero.has-portrait .hero-eyebrow::after { display: none; }
+        .hero.has-portrait .hero-rule { margin: 0 0 2rem; }
+        .hero.has-portrait .hero-subtitle { margin: 0 0 3rem; }
         .hero.has-portrait .hero-cta { justify-content: flex-start; }
         .hero.has-portrait .hero-socials { justify-content: flex-start; }
         .hero.has-portrait .hero-scroll { display: none; }
@@ -127,8 +166,9 @@
             display: inline-block;
             width: 28px;
             height: 1px;
-            background: var(--text-muted);
+            background: var(--accent);
             flex-shrink: 0;
+            opacity: 0.5;
         }
 
         .hero-name {
@@ -149,7 +189,8 @@
         .hero-rule {
             width: 40px;
             height: 1px;
-            background: var(--border-mid);
+            background: var(--accent);
+            opacity: 0.4;
             margin: 0 auto 2rem;
             animation: fadeIn 0.6s ease 0.2s forwards;
             opacity: 0;
@@ -190,10 +231,10 @@
             cursor: pointer;
             border: 1px solid transparent;
         }
-        .btn-primary { background: #ffffff; color: #000000; border-color: #ffffff; }
-        .btn-primary:hover { background: transparent; color: #ffffff; }
+        .btn-primary { background: var(--accent); color: #000000; border-color: var(--accent); }
+        .btn-primary:hover { background: transparent; color: var(--accent); }
         .btn-outline { background: transparent; color: var(--text-primary); border-color: var(--border-mid); }
-        .btn-outline:hover { border-color: #ffffff; }
+        .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
 
         .hero-socials {
             display: flex;
@@ -212,7 +253,7 @@
             text-decoration: none;
             transition: all 0.2s;
         }
-        .hero-socials a:hover { border-color: var(--text-primary); color: var(--text-primary); }
+        .hero-socials a:hover { border-color: var(--accent); color: var(--accent); }
 
         .hero-scroll {
             position: absolute;
@@ -232,35 +273,6 @@
         }
         .hero-scroll svg { animation: scrollBounce 2s ease-in-out infinite; }
 
-        /* Portrait panel — add class "has-portrait" to .hero and uncomment img */
-        .hero-portrait {
-            position: relative;
-            background: var(--bg-surface);
-            overflow: hidden;
-            min-height: 100vh;
-        }
-        .hero-portrait img {
-            position: absolute;
-            inset: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            object-position: top center;
-            filter: grayscale(100%) contrast(1.05) brightness(0.85);
-        }
-        .hero-portrait-label {
-            position: absolute;
-            bottom: 2.5rem;
-            right: 1.5rem;
-            font-size: 0.62rem;
-            letter-spacing: 0.2em;
-            text-transform: uppercase;
-            color: var(--text-muted);
-            writing-mode: vertical-rl;
-            text-orientation: mixed;
-            transform: rotate(180deg);
-        }
-
         /* ── DUAL NARRATIVE ── */
         .dual-section {
             display: grid;
@@ -268,7 +280,7 @@
         }
 
         .dual-panel {
-            padding: 5rem 4rem;
+            padding: 5rem 3rem;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -284,12 +296,13 @@
             font-weight: 600;
             letter-spacing: 0.2em;
             text-transform: uppercase;
-            color: var(--text-muted);
+            color: var(--accent);
+            opacity: 0.7;
         }
 
         .dual-title {
             font-family: var(--font-display);
-            font-size: clamp(2.5rem, 5.5vw, 5rem);
+            font-size: clamp(3.5rem, 7.5vw, 8rem);
             font-weight: 400;
             line-height: 0.95;
             letter-spacing: -0.03em;
@@ -317,7 +330,7 @@
             gap: 0.5rem;
             transition: color 0.2s, gap 0.2s;
         }
-        .dual-link:hover { color: var(--text-primary); gap: 0.85rem; }
+        .dual-link:hover { color: var(--accent); gap: 0.85rem; }
 
         /* ── SECTIONS ── */
         section { padding: 6rem 3rem; }
@@ -338,7 +351,7 @@
             font-weight: 600;
             letter-spacing: 0.15em;
             text-transform: uppercase;
-            color: var(--text-muted);
+            color: var(--accent);
             white-space: nowrap;
             flex-shrink: 0;
         }
@@ -448,7 +461,7 @@
             background: transparent;
             transition: all 0.2s;
         }
-        .pill:hover { border-color: var(--text-primary); color: var(--text-primary); }
+        .pill:hover { border-color: var(--accent); color: var(--accent); }
 
         /* ── EXPERIENCE ── */
         .timeline-item {
@@ -465,7 +478,8 @@
             font-weight: 600;
             letter-spacing: 0.1em;
             text-transform: uppercase;
-            color: var(--text-muted);
+            color: var(--accent);
+            opacity: 0.8;
             margin-bottom: 0.5rem;
             line-height: 1.6;
         }
@@ -526,7 +540,8 @@
             font-weight: 600;
             letter-spacing: 0.12em;
             text-transform: uppercase;
-            color: var(--text-muted);
+            color: var(--accent);
+            opacity: 0.8;
             margin-bottom: 0.6rem;
         }
         .advisory-card h3 {
@@ -543,7 +558,7 @@
             border-bottom: 1px solid var(--border-mid);
             transition: border-color 0.2s;
         }
-        .advisory-card h3 a:hover { border-color: var(--text-primary); }
+        .advisory-card h3 a:hover { border-color: var(--accent); }
         .advisory-card p {
             font-size: 0.82rem;
             color: var(--text-secondary);
@@ -577,8 +592,8 @@
             background: transparent;
             transition: all 0.2s;
         }
-        .cert-badge:hover { border-color: var(--text-primary); color: var(--text-primary); }
-        .cert-badge.highlight { border-color: var(--border-mid); color: var(--text-primary); }
+        .cert-badge:hover { border-color: var(--accent); color: var(--accent); }
+        .cert-badge.highlight { border-color: var(--border-mid); color: var(--accent); }
 
         .edu-grid { display: flex; flex-direction: column; gap: 1px; background: var(--border); border: 1px solid var(--border); max-width: 700px; }
 
@@ -591,7 +606,8 @@
             font-weight: 600;
             letter-spacing: 0.1em;
             text-transform: uppercase;
-            color: var(--text-muted);
+            color: var(--accent);
+            opacity: 0.8;
             margin-bottom: 0.5rem;
         }
         .edu-card h3 {
@@ -679,7 +695,7 @@
             align-items: center;
         }
         footer p { font-size: 0.73rem; color: var(--text-muted); letter-spacing: 0.04em; }
-        footer .ens { color: var(--text-secondary); }
+        footer .ens { color: var(--accent); }
 
         /* ── ANIMATIONS ── */
         @keyframes fadeIn {
@@ -714,11 +730,21 @@
                 gap: 1.25rem;
                 border-bottom: 1px solid var(--border);
             }
-            .hero { padding: 7rem 1.5rem 5rem; }
+            .hero { flex-direction: column; }
+            .hero-text { padding: 5rem 1.5rem 4rem; align-items: center; text-align: center; }
+            .hero.has-portrait .hero-portrait { display: none; }
+            .hero.has-portrait .hero-text { align-items: center; text-align: center; border-right: none; padding: 5rem 1.5rem 4rem; }
+            .hero.has-portrait .hero-eyebrow { justify-content: center; }
+            .hero.has-portrait .hero-eyebrow::after { display: inline-block; }
+            .hero.has-portrait .hero-rule { margin: 0 auto 2rem; }
+            .hero.has-portrait .hero-subtitle { margin: 0 auto 3rem; }
+            .hero.has-portrait .hero-cta { justify-content: center; }
+            .hero.has-portrait .hero-socials { justify-content: center; }
             .hero-name { font-size: clamp(4rem, 16vw, 7rem); }
             .dual-section { grid-template-columns: 1fr; }
             .dual-panel:first-child { border-right: none; border-bottom: 1px solid var(--border); }
             .dual-panel { min-height: auto; padding: 3.5rem 1.5rem; }
+            nav { padding: 1.25rem 1.5rem; }
             section { padding: 4rem 1.5rem; }
             .expertise-grid { grid-template-columns: 1fr; }
             .advisory-grid { grid-template-columns: repeat(2, 1fr); }
@@ -754,47 +780,42 @@
         </button>
     </nav>
 
-    <!-- Hero: centered full-width. When portrait is ready:
-         1. Add class "has-portrait" to this section
-         2. Uncomment the .hero-portrait div below -->
-    <section class="hero">
-        <div class="hero-eyebrow">Data Engineering Leader &middot; Manila, PH</div>
-        <h1 class="hero-name">Carlos<br><em>Enrique</em><br>Mattus</h1>
-        <div class="hero-rule"></div>
-        <p class="hero-subtitle">
-            10+ years scaling enterprise data platforms and the teams that run them.
-            Now extended into production AI and Retrieval-Augmented Generation.
-        </p>
-        <div class="hero-cta">
-            <a href="mailto:carlosetmattus@gmail.com" class="btn btn-primary">Get in Touch</a>
-            <a href="#expertise" class="btn btn-outline">Explore Work</a>
+    <section class="hero has-portrait">
+        <div class="hero-text">
+            <div class="hero-eyebrow">Data Engineering Leader &middot; Manila, PH</div>
+            <h1 class="hero-name">Carlos<br><em>Enrique</em><br>Mattus</h1>
+            <div class="hero-rule"></div>
+            <p class="hero-subtitle">
+                The gap between an impressive AI demo and something that runs in production is almost always a data problem. I've spent 10 years closing that gap — at Globe, Ascendion, and on the frontier of Web3 AI.
+            </p>
+            <div class="hero-cta">
+                <a href="mailto:carlosetmattus@gmail.com" class="btn btn-primary">Get in Touch</a>
+                <a href="#expertise" class="btn btn-outline">Explore Work</a>
+            </div>
+            <div class="hero-socials">
+                <a href="https://www.linkedin.com/in/cattusm" target="_blank" rel="noopener" aria-label="LinkedIn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                </a>
+                <a href="https://twitter.com/0xEyp" target="_blank" rel="noopener" aria-label="Twitter/X">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                </a>
+                <a href="https://www.instagram.com/carlos.mattus/" target="_blank" rel="noopener" aria-label="Instagram">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+                </a>
+                <a href="https://github.com/carlosetmattus" target="_blank" rel="noopener" aria-label="GitHub">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+                </a>
+            </div>
+            <div class="hero-scroll">
+                Scroll
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+            </div>
         </div>
-        <div class="hero-socials">
-            <a href="https://www.linkedin.com/in/cattusm" target="_blank" rel="noopener" aria-label="LinkedIn">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
-            </a>
-            <a href="https://twitter.com/0xEyp" target="_blank" rel="noopener" aria-label="Twitter/X">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-            </a>
-            <a href="https://www.instagram.com/carlos.mattus/" target="_blank" rel="noopener" aria-label="Instagram">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
-            </a>
-            <a href="https://github.com/carlosetmattus" target="_blank" rel="noopener" aria-label="GitHub">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
-            </a>
-        </div>
-        <div class="hero-scroll">
-            Scroll
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+        <div class="hero-portrait">
+            <img src="images/portrait.png" alt="Carlos Enrique Mattus">
+            <div class="hero-portrait-label">Carlos Enrique Mattus</div>
         </div>
     </section>
-
-    <!-- Portrait panel — uncomment when photo is ready and add class "has-portrait" to .hero above
-    <div class="hero-portrait">
-        <img src="images/hero.jpg" alt="Carlos Enrique Mattus">
-        <div class="hero-portrait-label">Carlos Enrique Mattus</div>
-    </div>
-    -->
 
     <!-- Dual narrative — Data / Advisory, inspired by ON TRACK / OFF TRACK -->
     <div class="dual-section reveal">
@@ -859,67 +880,28 @@
                 <h2 class="section-title">My Stack</h2>
             </div>
             <div class="stack-row">
-                <span class="stack-category">Big Data</span>
+                <span class="stack-category">Data Platform</span>
                 <div class="stack-pills">
-                    <span class="pill">Hadoop (HDP &amp; Cloudera)</span>
+                    <span class="pill">Databricks</span>
+                    <span class="pill">Snowflake</span>
                     <span class="pill">Kafka</span>
                     <span class="pill">Spark</span>
-                    <span class="pill">NiFi</span>
-                    <span class="pill">Airflow</span>
-                    <span class="pill">Hive</span>
-                    <span class="pill">Atlas</span>
-                </div>
-            </div>
-            <div class="stack-row">
-                <span class="stack-category">Data Engineering</span>
-                <div class="stack-pills">
-                    <span class="pill">ETL Design</span>
-                    <span class="pill">Data Warehousing</span>
-                    <span class="pill">Data Migration</span>
-                    <span class="pill">Real-Time Streaming</span>
-                    <span class="pill">Data Cataloging</span>
-                    <span class="pill">Data Governance</span>
                     <span class="pill">dbt</span>
                 </div>
             </div>
             <div class="stack-row">
                 <span class="stack-category">Cloud &amp; Infra</span>
                 <div class="stack-pills">
-                    <span class="pill">Google BigQuery</span>
-                    <span class="pill">Databricks</span>
-                    <span class="pill">Snowflake</span>
                     <span class="pill">GCP</span>
+                    <span class="pill">BigQuery</span>
                     <span class="pill">Kubernetes</span>
-                    <span class="pill">Ansible</span>
-                    <span class="pill">DevOps / CI/CD</span>
                 </div>
             </div>
             <div class="stack-row">
-                <span class="stack-category">BI &amp; Viz</span>
-                <div class="stack-pills">
-                    <span class="pill">Power BI</span>
-                    <span class="pill">Tableau</span>
-                    <span class="pill">Qlik</span>
-                    <span class="pill">Jupyter</span>
-                </div>
-            </div>
-            <div class="stack-row">
-                <span class="stack-category">Programming</span>
+                <span class="stack-category">Code</span>
                 <div class="stack-pills">
                     <span class="pill">Python</span>
                     <span class="pill">SQL</span>
-                    <span class="pill">R</span>
-                    <span class="pill">Shell Scripting</span>
-                    <span class="pill">Git</span>
-                </div>
-            </div>
-            <div class="stack-row">
-                <span class="stack-category">Web3</span>
-                <div class="stack-pills">
-                    <span class="pill">Ethereum</span>
-                    <span class="pill">ENS</span>
-                    <span class="pill">Solidity</span>
-                    <span class="pill">ElizaOS</span>
                 </div>
             </div>
         </div>
@@ -940,7 +922,7 @@
                     </div>
                     <div class="timeline-right">
                         <h3 class="timeline-role">Data Engineering Manager</h3>
-                        <p class="timeline-desc">Leading data engineering for Globe's Data Innovation and Monetization team. Developed POCs that unlocked ~PHP 80M in accounts receivable and cut POC turnaround from 3 months to 2 weeks. Established data governance and PII controls for a regulated telco environment. Enabled production RAG use cases across three internal AI groups (ISG, EDS, AIG) and built a cost-effective CI/CD framework using self-hosted GitLab runners.</p>
+                        <p class="timeline-desc">When I joined, Globe's innovation team was spending three months just to prove whether a data idea was worth building. The problem wasn't ambition — it was infrastructure. I built a self-hosted GitLab CI/CD framework and a unified data mart that cut that POC cycle to two weeks. One early POC alone surfaced ~PHP 80M in recoverable accounts receivable. Now we're shipping production RAG systems across three internal AI groups, with PII governance in place that meets telco regulatory standards.</p>
                     </div>
                 </div>
                 <div class="timeline-item">
