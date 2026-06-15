@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Space+Grotesk:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" defer></script>
     <style>
         :root {
             --bg: #000;
@@ -166,7 +167,7 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
-            padding: 4.5rem 5rem;
+            padding: 2.5rem 2.5rem 2.5rem 5rem;
         }
         .hero-eyebrow {
             font-size: 0.75rem;
@@ -174,7 +175,7 @@
             letter-spacing: 0.22em;
             text-transform: uppercase;
             color: var(--text-3);
-            margin-bottom: 2.5rem;
+            margin-bottom: 1.5rem;
             display: flex;
             align-items: center;
             gap: 1rem;
@@ -193,7 +194,7 @@
             font-weight: 400;
             line-height: 0.88;
             letter-spacing: -0.04em;
-            margin-bottom: 3rem;
+            margin-bottom: 1.5rem;
             animation: fadeUp 0.7s ease 0.1s both;
         }
         .hero-name em { font-style: italic; color: var(--text-2); }
@@ -201,15 +202,15 @@
             width: 36px; height: 1px;
             background: var(--accent);
             opacity: 0.35;
-            margin-bottom: 2rem;
+            margin-bottom: 1.25rem;
             animation: fadeUp 0.6s ease 0.2s both;
         }
         .hero-tagline {
             font-size: clamp(1rem, 1.6vw, 1.2rem);
             color: var(--text-2);
             line-height: 1.85;
-            max-width: 420px;
-            margin-bottom: 3.5rem;
+            max-width: 520px;
+            margin-bottom: 2rem;
             font-weight: 300;
             animation: fadeUp 0.6s ease 0.25s both;
         }
@@ -245,7 +246,7 @@
         }
         .hero-socials a:hover { color: var(--accent); }
         .hero-portrait {
-            width: 38%;
+            width: 45%;
             flex-shrink: 0;
             position: relative;
             overflow: hidden;
@@ -327,9 +328,9 @@
         .exp-list { display: flex; flex-direction: column; }
         .exp-item {
             display: grid;
-            grid-template-columns: 56px 1fr auto;
+            grid-template-columns: 56px 1fr;
             gap: 0 2.5rem;
-            align-items: baseline;
+            align-items: start;
             padding: 1.6rem 0;
             border-bottom: 1px solid var(--border);
             transition: opacity 0.2s;
@@ -341,20 +342,15 @@
             font-size: 1rem;
             color: var(--text-3);
             font-style: italic;
+            padding-top: 0.2rem;
         }
+        .exp-body { display: flex; flex-direction: column; gap: 0.75rem; }
         .exp-title {
             font-family: var(--f-display);
             font-size: clamp(1.15rem, 2vw, 1.6rem);
             font-weight: 400;
             letter-spacing: -0.01em;
             transition: color 0.2s;
-        }
-        .exp-tags {
-            font-size: 0.82rem;
-            color: var(--text-3);
-            letter-spacing: 0.05em;
-            text-align: right;
-            white-space: nowrap;
         }
 
         /* ── STACK ── */
@@ -646,12 +642,12 @@
             display: flex;
             align-items: center;
             gap: 0.6rem;
-            font-size: 0.62rem;
+            font-size: 0.82rem;
             font-weight: 500;
             letter-spacing: 0.12em;
             color: var(--text-3);
         }
-        .ambient-moon { font-size: 0.85rem; line-height: 1; }
+        .ambient-moon { font-size: 1.1rem; line-height: 1; }
 
         /* ── KEYBOARD HINT ── */
         .key-hint {
@@ -660,23 +656,30 @@
             left: 50%;
             transform: translateX(-50%);
             z-index: 200;
-            font-size: 0.58rem;
+            font-size: 0.7rem;
             font-weight: 500;
-            letter-spacing: 0.18em;
+            letter-spacing: 0.14em;
             text-transform: uppercase;
-            color: var(--text-3);
+            color: var(--text-2);
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.6rem;
             transition: opacity 0.7s ease;
             animation: fadeUp 0.8s ease 1.5s both;
             pointer-events: none;
         }
-        .key-hint-arrow {
+        .key-cap {
             display: inline-flex;
-            flex-direction: column;
-            gap: 1px;
-            opacity: 0.6;
+            align-items: center;
+            justify-content: center;
+            width: 1.6rem;
+            height: 1.6rem;
+            border: 1px solid var(--border-mid);
+            border-radius: 4px;
+            background: rgba(196,134,122,0.06);
+            font-size: 0.75rem;
+            color: var(--accent);
+            line-height: 1;
         }
 
         /* ── CURSOR TRAIL CANVAS ── */
@@ -749,8 +752,9 @@
     <canvas id="cursorCanvas"></canvas>
 
     <div class="key-hint" id="keyHint">
-        <span class="key-hint-arrow">↑<br>↓</span>
-        to navigate
+        <span class="key-cap">↑</span>
+        <span class="key-cap">↓</span>
+        <span>to navigate slides</span>
     </div>
 
     <div class="konami-overlay" id="konamiOverlay">
@@ -812,64 +816,63 @@
         </div>
     </div>
 
-    <!-- 03 EXPERTISE -->
+    <!-- 03 EXPERTISE & STACK -->
     <section id="expertise">
         <div class="slide-inner">
-            <div class="s-label">What I Do</div>
-            <h2 class="s-heading">Core Expertise</h2>
+            <div class="s-label">Skills &amp; Tools</div>
+            <h2 class="s-heading">Expertise &amp; Stack</h2>
             <div class="exp-list">
                 <div class="exp-item">
                     <span class="exp-num">01</span>
-                    <span class="exp-title">Data Architecture &amp; Cloud</span>
-                    <span class="exp-tags">Databricks &middot; Snowflake &middot; Kafka &middot; Spark &middot; GCP</span>
+                    <div class="exp-body">
+                        <span class="exp-title">Data Architecture &amp; Cloud</span>
+                        <div class="stack-tools">
+                            <span class="stack-tool">Databricks</span>
+                            <span class="stack-tool">Snowflake</span>
+                            <span class="stack-tool">Kafka</span>
+                            <span class="stack-tool">Spark</span>
+                            <span class="stack-tool">dbt</span>
+                            <span class="stack-tool">GCP</span>
+                            <span class="stack-tool">BigQuery</span>
+                            <span class="stack-tool">Kubernetes</span>
+                        </div>
+                    </div>
                 </div>
                 <div class="exp-item">
                     <span class="exp-num">02</span>
-                    <span class="exp-title">Production AI &amp; RAG Systems</span>
-                    <span class="exp-tags">RAG &middot; AI Agents &middot; LLMs &middot; Ethical AI</span>
+                    <div class="exp-body">
+                        <span class="exp-title">Production AI &amp; RAG Systems</span>
+                        <div class="stack-tools">
+                            <span class="stack-tool">RAG</span>
+                            <span class="stack-tool">AI Agents</span>
+                            <span class="stack-tool">LLMs</span>
+                            <span class="stack-tool">Ethical AI</span>
+                        </div>
+                    </div>
                 </div>
                 <div class="exp-item">
                     <span class="exp-num">03</span>
-                    <span class="exp-title">Analytics &amp; Data Science</span>
-                    <span class="exp-tags">Python &middot; R &middot; SQL &middot; Power BI &middot; Tableau</span>
+                    <div class="exp-body">
+                        <span class="exp-title">Analytics &amp; Data Science</span>
+                        <div class="stack-tools">
+                            <span class="stack-tool">Python</span>
+                            <span class="stack-tool">SQL</span>
+                            <span class="stack-tool">R</span>
+                            <span class="stack-tool">Power BI</span>
+                            <span class="stack-tool">Tableau</span>
+                        </div>
+                    </div>
                 </div>
                 <div class="exp-item">
                     <span class="exp-num">04</span>
-                    <span class="exp-title">Leadership &amp; Delivery</span>
-                    <span class="exp-tags">265 people &middot; $4.5M ARR &middot; P&amp;L</span>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- 04 STACK -->
-    <section id="stack">
-        <div class="slide-inner">
-            <div class="s-label">Tools &amp; Technologies</div>
-            <h2 class="s-heading">My Stack</h2>
-            <div class="stack-row">
-                <span class="stack-cat">Data Platform</span>
-                <div class="stack-tools">
-                    <span class="stack-tool">Databricks</span>
-                    <span class="stack-tool">Snowflake</span>
-                    <span class="stack-tool">Kafka</span>
-                    <span class="stack-tool">Spark</span>
-                    <span class="stack-tool">dbt</span>
-                </div>
-            </div>
-            <div class="stack-row">
-                <span class="stack-cat">Cloud &amp; Infra</span>
-                <div class="stack-tools">
-                    <span class="stack-tool">GCP</span>
-                    <span class="stack-tool">BigQuery</span>
-                    <span class="stack-tool">Kubernetes</span>
-                </div>
-            </div>
-            <div class="stack-row">
-                <span class="stack-cat">Code</span>
-                <div class="stack-tools">
-                    <span class="stack-tool">Python</span>
-                    <span class="stack-tool">SQL</span>
+                    <div class="exp-body">
+                        <span class="exp-title">Leadership &amp; Delivery</span>
+                        <div class="stack-tools">
+                            <span class="stack-tool">265-person team</span>
+                            <span class="stack-tool">$4.5M ARR</span>
+                            <span class="stack-tool">P&amp;L ownership</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1018,6 +1021,33 @@
             }
             updateUI(0);
 
+            // Elements to stagger per slide index (null = skip)
+            const slideAnimTargets = [
+                null,           // 0: hero — CSS animations handle it
+                '.what-panel',  // 1: what I do
+                '.exp-item',    // 2: expertise & stack
+                '.adv-card',    // 3: advisory
+                '.cert-item, .edu-item', // 4: credentials
+                '.comm-item',   // 5: community
+            ];
+
+            function animateSlideIn(slideEl, selector) {
+                if (!selector || typeof anime === 'undefined') return;
+                const els = slideEl.querySelectorAll(selector);
+                if (!els.length) return;
+                anime.set(els, { opacity: 0, translateY: 22 });
+                setTimeout(() => {
+                    anime({
+                        targets: els,
+                        opacity: [0, 1],
+                        translateY: [22, 0],
+                        duration: 480,
+                        delay: anime.stagger(65),
+                        easing: 'easeOutCubic',
+                    });
+                }, 600);
+            }
+
             function goTo(idx) {
                 if (animating || idx === current || idx < 0 || idx >= total) return;
                 animating = true;
@@ -1035,6 +1065,7 @@
                     to.classList.add('fp-active');
                     current = idx;
                     updateUI(idx);
+                    animateSlideIn(to, slideAnimTargets[idx]);
                     setTimeout(() => { animating = false; }, 850);
                 }));
             }
@@ -1147,7 +1178,7 @@
                 hint.style.opacity = '0';
                 setTimeout(() => hint.remove(), 700);
             }
-            setTimeout(dismiss, 5000);
+            setTimeout(dismiss, 10000);
             window.addEventListener('wheel', dismiss, { once: true });
             window.addEventListener('keydown', (e) => {
                 if (['ArrowUp','ArrowDown','PageUp','PageDown'].includes(e.key)) dismiss();
