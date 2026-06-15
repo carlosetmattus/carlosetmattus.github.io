@@ -650,34 +650,33 @@
         .ambient-moon { font-size: 1.1rem; line-height: 1; }
 
         /* ── KEYBOARD HINT ── */
+        .ambient-divider {
+            width: 1px;
+            height: 0.8rem;
+            background: var(--border-mid);
+            margin: 0 0.2rem;
+        }
         .key-hint {
-            position: fixed;
-            bottom: 1.75rem;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 200;
-            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-size: 0.62rem;
             font-weight: 500;
             letter-spacing: 0.14em;
             text-transform: uppercase;
-            color: var(--text-2);
-            display: flex;
-            align-items: center;
-            gap: 0.6rem;
-            transition: opacity 0.7s ease;
-            animation: fadeUp 0.8s ease 1.5s both;
+            color: var(--text-3);
             pointer-events: none;
         }
         .key-cap {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 1.6rem;
-            height: 1.6rem;
+            width: 1.3rem;
+            height: 1.3rem;
             border: 1px solid var(--border-mid);
-            border-radius: 4px;
-            background: rgba(196,134,122,0.06);
-            font-size: 0.75rem;
+            border-radius: 3px;
+            background: rgba(196,134,122,0.05);
+            font-size: 0.65rem;
             color: var(--accent);
             line-height: 1;
         }
@@ -742,6 +741,12 @@
             <span class="ambient-moon" id="moonPhase" title=""></span>
             <span id="liveClock">00:00:00</span>
             <span>PHT</span>
+            <span class="ambient-divider"></span>
+            <div class="key-hint" id="keyHint">
+                <span class="key-cap">↑</span>
+                <span class="key-cap">↓</span>
+                <span>navigate</span>
+            </div>
         </div>
         <div class="nav-counter"><span class="cur" id="navCur">01</span> / <span id="navTot">09</span></div>
         <a href="mailto:carlosetmattus@gmail.com" class="nav-cta">Get in Touch</a>
@@ -750,12 +755,6 @@
     <div class="slide-indicator" id="slideIndicator"></div>
 
     <canvas id="cursorCanvas"></canvas>
-
-    <div class="key-hint" id="keyHint">
-        <span class="key-cap">↑</span>
-        <span class="key-cap">↓</span>
-        <span>to navigate slides</span>
-    </div>
 
     <div class="konami-overlay" id="konamiOverlay">
         <div class="konami-glyph">🚀</div>
@@ -1168,22 +1167,7 @@
             })();
         })();
 
-        // ── KEYBOARD HINT ──
-        (function () {
-            const hint = document.getElementById('keyHint');
-            let gone = false;
-            function dismiss() {
-                if (gone) return;
-                gone = true;
-                hint.style.opacity = '0';
-                setTimeout(() => hint.remove(), 700);
-            }
-            setTimeout(dismiss, 10000);
-            window.addEventListener('wheel', dismiss, { once: true });
-            window.addEventListener('keydown', (e) => {
-                if (['ArrowUp','ArrowDown','PageUp','PageDown'].includes(e.key)) dismiss();
-            }, { once: true });
-        })();
+        // ── KEYBOARD HINT (permanent) ──
 
         // ── KONAMI CODE ──
         (function () {
