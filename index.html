@@ -537,7 +537,15 @@
             align-items: start;
         }
         .comm-item:first-child { border-top: 1px solid var(--border); }
-        .comm-icon { font-size: 1.4rem; padding-top: 0.15rem; }
+        .comm-icon { font-size: 1.4rem; padding-top: 0.15rem; width: 52px; }
+        .comm-icon img {
+            width: 100%;
+            height: 32px;
+            object-fit: contain;
+            object-position: left center;
+            filter: grayscale(1) brightness(2);
+            opacity: 0.5;
+        }
         .comm-name {
             font-family: var(--f-display);
             font-size: 1.25rem;
@@ -955,7 +963,7 @@
             <h2 class="s-heading">Community &amp; Beyond</h2>
             <div class="comm-list">
                 <div class="comm-item">
-                    <div class="comm-icon">🌏</div>
+                    <div class="comm-icon"><img src="images/jci-manila.png" alt="JCI Manila"></div>
                     <div>
                         <div class="comm-name">JCI Manila</div>
                         <p class="comm-desc">Special Projects Commissioner (2019–2021) at Junior Chamber International Manila. Recipient of JCI Philippines Leadership, Presidential, and Commissioner Awards 2020–21.</p>
@@ -963,7 +971,7 @@
                     </div>
                 </div>
                 <div class="comm-item">
-                    <div class="comm-icon">🎤</div>
+                    <div class="comm-icon"><img src="images/devcon-speaker.webp" alt="DevCon"></div>
                     <div>
                         <div class="comm-name">Speaking Engagements</div>
                         <p class="comm-desc">Globe: AI Enablement Sessions with RAG &middot; DevCon: Big Data &amp; the 4th Industrial Revolution &middot; JCI Philippines: Data Science in Business. Bridging enterprise data and the Filipino developer community.</p>
