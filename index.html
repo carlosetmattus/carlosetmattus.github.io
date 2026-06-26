@@ -43,7 +43,6 @@
             filter: brightness(0.85) saturate(1.2);
             transform: scale(1.8);
             transform-origin: center;
-            transition: transform 1.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             will-change: transform;
         }
 
@@ -993,9 +992,26 @@
 
     <script>
         const nebulaImg = document.getElementById('nebulaImg');
+        let _nScale = 1.8, _nTargetScale = 1.8;
+        let _nX = 0, _nY = 0, _nTX = 0, _nTY = 0;
+
         function setNebulaScale(p) {
-            nebulaImg.style.transform = `scale(${1.8 - p * 0.8})`;
+            _nTargetScale = 1.8 - p * 0.8;
         }
+
+        window.addEventListener('mousemove', (e) => {
+            const cx = window.innerWidth / 2, cy = window.innerHeight / 2;
+            _nTX = ((e.clientX - cx) / cx) * -18;
+            _nTY = ((e.clientY - cy) / cy) * -12;
+        });
+
+        (function animNebula() {
+            _nScale += (_nTargetScale - _nScale) * 0.04;
+            _nX    += (_nTX - _nX) * 0.06;
+            _nY    += (_nTY - _nY) * 0.06;
+            nebulaImg.style.transform = `scale(${_nScale}) translate(${_nX}px, ${_nY}px)`;
+            requestAnimationFrame(animNebula);
+        })();
 
         (function () {
             const slides = [...document.querySelectorAll('section, .what-slide, footer')];
