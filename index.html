@@ -5,6 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Carlos Enrique Mattus: Data Engineering & AI</title>
     <meta name="description" content="Data engineering leader with 10+ years building production data platforms. Globe Telecom, Ascendion. AI advisory: Virtuals Protocol, ElizaOS.">
+    <link rel="canonical" href="https://carlosetmattus.github.io/">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23000'/%3E%3Ctext x='16' y='24' font-family='Georgia,serif' font-size='24' fill='%23c4867a' text-anchor='middle'%3EC%3C/text%3E%3C/svg%3E">
+
+    <!-- Open Graph / social sharing -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://carlosetmattus.github.io/">
+    <meta property="og:title" content="Carlos Enrique Mattus: Data Engineering & AI">
+    <meta property="og:description" content="Data engineering leader with 10+ years building production data platforms. Globe Telecom, Ascendion. AI advisory: Virtuals Protocol, ElizaOS.">
+    <meta property="og:image" content="https://carlosetmattus.github.io/images/portrait.png">
+    <meta property="og:image:alt" content="Carlos Enrique Mattus">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:creator" content="@0xEyp">
+    <meta name="twitter:title" content="Carlos Enrique Mattus: Data Engineering & AI">
+    <meta name="twitter:description" content="Data engineering leader with 10+ years building production data platforms. Globe Telecom, Ascendion. AI advisory: Virtuals Protocol, ElizaOS.">
+    <meta name="twitter:image" content="https://carlosetmattus.github.io/images/portrait.png">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Space+Grotesk:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -15,7 +31,7 @@
             --accent: #c4867a;
             --text-1: #f8f2ee;
             --text-2: #b89e97;
-            --text-3: #6e5550;
+            --text-3: #8a726c;
             --border: rgba(196,134,122,0.15);
             --border-mid: rgba(196,134,122,0.3);
             --f-display: 'Cormorant Garamond', Georgia, serif;
@@ -24,7 +40,9 @@
         }
 
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-        html { -webkit-font-smoothing: antialiased; moz-osx-font-smoothing: grayscale; }
+        :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+        .fp-slide:focus, .fp-slide:focus-visible { outline: none; }
+        html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
         body { font-family: var(--f-body); background: var(--bg); color: var(--text-1); overflow: hidden; }
 
         /* ── NEBULA ── */
@@ -99,17 +117,28 @@
             align-items: center;
         }
         .si-dot {
+            appearance: none;
+            -webkit-appearance: none;
+            border: none;
+            padding: 8px;
+            background: transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .si-dot::before {
+            content: '';
             width: 3px; height: 3px;
             border-radius: 50%;
             background: var(--text-3);
-            cursor: pointer;
             transition: all 0.35s;
         }
-        .si-dot.active {
+        .si-dot[aria-current="true"]::before {
             background: var(--accent);
             transform: scale(1.8);
         }
-        .si-dot:hover { background: var(--text-2); }
+        .si-dot:hover::before { background: var(--text-2); }
 
         /* ── SLIDES ── */
         .fp-slide {
@@ -141,7 +170,7 @@
             letter-spacing: 0.22em;
             text-transform: uppercase;
             color: var(--accent);
-            opacity: 0.65;
+            opacity: 0.9;
             margin-bottom: 0.6rem;
         }
         .s-heading {
@@ -291,7 +320,7 @@
             letter-spacing: 0.24em;
             text-transform: uppercase;
             color: var(--accent);
-            opacity: 0.55;
+            opacity: 0.9;
         }
         .what-title {
             font-family: var(--f-display);
@@ -380,40 +409,6 @@
         }
         .stack-tool:hover { border-color: var(--accent); color: var(--accent); }
 
-        /* ── EXPERIENCE ── */
-        .timeline { display: flex; flex-direction: column; }
-        .tl-item {
-            display: grid;
-            grid-template-columns: 210px 1fr;
-            gap: 3rem;
-            padding: 1.75rem 0;
-            border-bottom: 1px solid var(--border);
-        }
-        .tl-item:first-child { border-top: 1px solid var(--border); }
-        .tl-date {
-            font-size: 0.7rem;
-            font-weight: 600;
-            letter-spacing: 0.14em;
-            text-transform: uppercase;
-            color: var(--accent);
-            opacity: 0.7;
-            margin-bottom: 0.4rem;
-        }
-        .tl-company { font-size: 0.9rem; color: var(--text-2); line-height: 1.5; }
-        .tl-role {
-            font-family: var(--f-display);
-            font-size: clamp(1rem, 1.7vw, 1.35rem);
-            font-weight: 400;
-            margin-bottom: 0.55rem;
-            letter-spacing: -0.01em;
-        }
-        .tl-desc {
-            font-size: 0.95rem;
-            color: var(--text-2);
-            line-height: 1.78;
-            font-weight: 300;
-        }
-
         /* ── ADVISORY ── */
         .adv-grid {
             display: grid;
@@ -444,7 +439,7 @@
             letter-spacing: 0.14em;
             text-transform: uppercase;
             color: var(--accent);
-            opacity: 0.7;
+            opacity: 0.9;
             margin-bottom: 0.5rem;
         }
         .adv-name {
@@ -514,7 +509,7 @@
             letter-spacing: 0.14em;
             text-transform: uppercase;
             color: var(--accent);
-            opacity: 0.7;
+            opacity: 0.9;
             margin-bottom: 0.3rem;
         }
         .edu-degree {
@@ -552,6 +547,17 @@
             margin-bottom: 0.35rem;
         }
         .comm-desc { font-size: 0.95rem; color: var(--text-2); line-height: 1.72; font-weight: 300; }
+        ul.comm-desc { list-style: none; display: flex; flex-direction: column; gap: 0.45rem; }
+        ul.comm-desc li { position: relative; padding-left: 1.1rem; }
+        ul.comm-desc li::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 0.62em;
+            width: 3px; height: 3px;
+            border-radius: 50%;
+            background: var(--accent);
+            opacity: 0.7;
+        }
         .comm-tag {
             display: inline-block;
             margin-top: 0.6rem;
@@ -619,6 +625,18 @@
             to { opacity: 1; transform: none; }
         }
 
+        /* ── REDUCED MOTION ── */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.001ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.001ms !important;
+            }
+            .fp-slide { transition: opacity 0.2s ease !important; }
+            .bg-nebula img { transform: scale(1.4) !important; }
+            #cursorCanvas { display: none; }
+        }
+
         /* ── RESPONSIVE ── */
         @media (max-width: 900px) {
             :root { --nav-h: 56px; }
@@ -634,8 +652,6 @@
             .what-panel:first-child { border-right: none; border-bottom: 1px solid var(--border); }
             .slide-inner { padding: 2.5rem 1.5rem; justify-content: flex-start; padding-top: 3rem; }
             .exp-item { grid-template-columns: 40px 1fr; }
-            .exp-tags { display: none; }
-            .tl-item { grid-template-columns: 1fr; gap: 0.4rem; }
             .adv-grid { grid-template-columns: 1fr 1fr; }
             .creds-layout { grid-template-columns: 1fr; gap: 2rem; }
         }
@@ -744,7 +760,7 @@
     </div>
 
     <nav>
-        <div class="ambient-status">
+        <div class="ambient-status" aria-hidden="true">
             <span class="ambient-moon" id="moonPhase" title=""></span>
             <span id="liveClock">00:00:00</span>
             <span>PHT</span>
@@ -755,7 +771,7 @@
                 <span>navigate</span>
             </div>
         </div>
-        <div class="nav-counter"><span class="cur" id="navCur">01</span> / <span id="navTot">09</span></div>
+        <div class="nav-counter"><span class="cur" id="navCur">01</span> / <span id="navTot">06</span></div>
         <a href="mailto:carlosetmattus@gmail.com" class="nav-cta">Get in Touch</a>
     </nav>
 
@@ -769,11 +785,12 @@
         <div class="konami-sub">Cheat code activated</div>
     </div>
 
+    <main>
     <!-- 01 HERO -->
-    <section class="hero">
+    <section class="hero" aria-labelledby="h-hero">
         <div class="hero-body">
             <div class="hero-eyebrow">Data Engineering Leader &middot; Manila, PH</div>
-            <h1 class="hero-name">Carlos<br><em>Enrique</em><br>Mattus</h1>
+            <h1 class="hero-name" id="h-hero">Carlos<br><em>Enrique</em><br>Mattus</h1>
             <div class="hero-rule"></div>
             <p class="hero-tagline">
                 The gap between an impressive AI demo and something that runs in production is almost always a data problem. I've spent 10 years closing that gap, at Globe, Ascendion, and on the frontier of Web3 AI.
@@ -803,10 +820,10 @@
     </section>
 
     <!-- 02 WHAT I DO -->
-    <div class="what-slide" id="whatido">
+    <div class="what-slide" id="whatido" role="region" aria-label="What I do">
         <div class="what-panel">
             <div class="what-index">01</div>
-            <div class="what-title">Data &amp;<br><em>Engineering</em></div>
+            <h2 class="what-title">Data &amp;<br><em>Engineering</em></h2>
             <div>
                 <p class="what-desc">Enterprise-scale pipelines, cloud architecture, and Big Data platforms built to run at 265-person delivery scale with production-grade governance.</p>
                 <a href="#expertise" class="what-link">Explore expertise &rarr;</a>
@@ -814,7 +831,7 @@
         </div>
         <div class="what-panel">
             <div class="what-index">02</div>
-            <div class="what-title">AI &amp;<br><em>Advisory</em></div>
+            <h2 class="what-title">AI &amp;<br><em>Advisory</em></h2>
             <div>
                 <p class="what-desc">Production RAG systems, AI agents, and strategic advisory at the frontier of Web3: Virtuals Protocol ($5B peak), ElizaOS (118K GitHub stars).</p>
                 <a href="#advisory" class="what-link">View advisory roles &rarr;</a>
@@ -823,15 +840,15 @@
     </div>
 
     <!-- 03 EXPERTISE & STACK -->
-    <section id="expertise">
+    <section id="expertise" aria-labelledby="h-expertise">
         <div class="slide-inner">
             <div class="s-label">Skills &amp; Tools</div>
-            <h2 class="s-heading">Expertise &amp; Stack</h2>
+            <h2 class="s-heading" id="h-expertise">Expertise &amp; Stack</h2>
             <div class="exp-list">
                 <div class="exp-item">
                     <span class="exp-num">01</span>
                     <div class="exp-body">
-                        <span class="exp-title">Data Architecture &amp; Cloud</span>
+                        <h3 class="exp-title">Data Architecture &amp; Cloud</h3>
                         <div class="stack-tools">
                             <span class="stack-tool">Databricks</span>
                             <span class="stack-tool">Snowflake</span>
@@ -847,7 +864,7 @@
                 <div class="exp-item">
                     <span class="exp-num">02</span>
                     <div class="exp-body">
-                        <span class="exp-title">Production AI &amp; RAG Systems</span>
+                        <h3 class="exp-title">Production AI &amp; RAG Systems</h3>
                         <div class="stack-tools">
                             <span class="stack-tool">RAG</span>
                             <span class="stack-tool">AI Agents</span>
@@ -859,7 +876,7 @@
                 <div class="exp-item">
                     <span class="exp-num">03</span>
                     <div class="exp-body">
-                        <span class="exp-title">Analytics &amp; Data Science</span>
+                        <h3 class="exp-title">Analytics &amp; Data Science</h3>
                         <div class="stack-tools">
                             <span class="stack-tool">Python</span>
                             <span class="stack-tool">SQL</span>
@@ -872,7 +889,7 @@
                 <div class="exp-item">
                     <span class="exp-num">04</span>
                     <div class="exp-body">
-                        <span class="exp-title">Leadership &amp; Delivery</span>
+                        <h3 class="exp-title">Leadership &amp; Delivery</h3>
                         <div class="stack-tools">
                             <span class="stack-tool">265-person team</span>
                             <span class="stack-tool">$4.5M ARR</span>
@@ -885,36 +902,36 @@
     </section>
 
     <!-- 05 ADVISORY -->
-    <section id="advisory">
+    <section id="advisory" aria-labelledby="h-advisory">
         <div class="slide-inner">
             <div class="s-label">Advisory &amp; Strategy</div>
-            <h2 class="s-heading">Advisory Roles</h2>
+            <h2 class="s-heading" id="h-advisory">Advisory Roles</h2>
             <div class="adv-grid">
                 <div class="adv-card">
                     <img src="images/logo-virtuals.png" alt="Virtuals Protocol" class="adv-logo">
                     <div class="adv-role-label">Adviser &middot; Nov 2021–Present</div>
-                    <div class="adv-name"><a href="https://www.virtuals.io/" target="_blank" rel="noopener">Virtuals Protocol</a></div>
+                    <h3 class="adv-name"><a href="https://www.virtuals.io/" target="_blank" rel="noopener">Virtuals Protocol</a></h3>
                     <p class="adv-desc">Model-training direction for the AI agent engine. Core M.U.S.I.C. contributor. Peaked at $5B market cap, 17,000+ tokenized agents, $8B+ DEX volume.</p>
                     <div class="adv-tag">AI Agents &middot; M.U.S.I.C.</div>
                 </div>
                 <div class="adv-card">
                     <div style="height:26px;margin-bottom:2rem;"></div>
                     <div class="adv-role-label">Head of Strategy &amp; Intelligence</div>
-                    <div class="adv-name">AI Club Philippines</div>
+                    <h3 class="adv-name">AI Club Philippines</h3>
                     <p class="adv-desc">Strategy and intelligence for one of the region's leading AI communities, guiding research, ecosystem partnerships, and engagement across the Philippines and SEA.</p>
                     <div class="adv-tag">AI Strategy &middot; SEA</div>
                 </div>
                 <div class="adv-card">
                     <img src="images/logo-treasure.png" alt="Treasure" class="adv-logo">
                     <div class="adv-role-label">PH Ambassador &middot; Dec 2024–Present</div>
-                    <div class="adv-name"><a href="https://treasure.lol/" target="_blank" rel="noopener">Treasure</a></div>
+                    <h3 class="adv-name"><a href="https://treasure.lol/" target="_blank" rel="noopener">Treasure</a></h3>
                     <p class="adv-desc">Leading the Philippine community for Treasure, a decentralized gaming and AI ecosystem powered by $MAGIC. Organizing events showcasing AI gaming and autonomous agent marketplaces.</p>
                     <div class="adv-tag">AI Gaming &middot; $MAGIC</div>
                 </div>
                 <div class="adv-card">
                     <img src="images/logo-elizaos.png" alt="ElizaOS" class="adv-logo">
                     <div class="adv-role-label">Contributor &middot; Dec 2023–Present</div>
-                    <div class="adv-name"><a href="https://elizaos.ai/" target="_blank" rel="noopener">ElizaOS</a></div>
+                    <h3 class="adv-name"><a href="https://elizaos.ai/" target="_blank" rel="noopener">ElizaOS</a></h3>
                     <p class="adv-desc">Top-30 contributor to the most popular open-source AI agent framework in Web3, with 118K+ GitHub stars. TypeScript OS for autonomous agents across Discord, Telegram, and blockchain.</p>
                     <div class="adv-tag">Open Source &middot; Top-30</div>
                 </div>
@@ -923,13 +940,13 @@
     </section>
 
     <!-- 06 CREDENTIALS -->
-    <section id="certs">
+    <section id="certs" aria-labelledby="h-certs">
         <div class="slide-inner">
             <div class="s-label">Credentials</div>
-            <h2 class="s-heading">Certifications &amp; Education</h2>
+            <h2 class="s-heading" id="h-certs">Certifications &amp; Education</h2>
             <div class="creds-layout">
                 <div>
-                    <div class="creds-col-label">Certifications</div>
+                    <h3 class="creds-col-label">Certifications</h3>
                     <div class="cert-item hi"><span class="cert-dot"></span>PRC Licensed Electronics Engineer</div>
                     <div class="cert-item hi"><span class="cert-dot"></span>TOGAF 9 Certified</div>
                     <div class="cert-item hi"><span class="cert-dot"></span>DAMA: Certified Data Management Professional</div>
@@ -939,15 +956,15 @@
                     <div class="cert-item"><span class="cert-dot"></span>Accenture Digital Internship, Top 1</div>
                 </div>
                 <div>
-                    <div class="creds-col-label">Education</div>
+                    <h3 class="creds-col-label">Education</h3>
                     <div class="edu-item">
                         <div class="edu-year">2014</div>
-                        <div class="edu-degree">Graduate Studies, Electrical Engineering</div>
+                        <h4 class="edu-degree">Graduate Studies, Electrical Engineering</h4>
                         <div class="edu-school">National University of Singapore &middot; MS-level coursework</div>
                     </div>
                     <div class="edu-item">
                         <div class="edu-year">2008–2013</div>
-                        <div class="edu-degree">BS Electronics Engineering</div>
+                        <h4 class="edu-degree">BS Electronics Engineering</h4>
                         <div class="edu-school">Map&uacute;a Institute of Technology &middot; Microelectronics<br>Best Presenter · Class President · Debate Corps Captain</div>
                     </div>
                 </div>
@@ -956,41 +973,54 @@
     </section>
 
     <!-- 07 COMMUNITY -->
-    <section id="beyond">
+    <section id="beyond" aria-labelledby="h-beyond">
         <div class="slide-inner">
             <div class="s-label">Giving Back</div>
-            <h2 class="s-heading">Community &amp; Beyond</h2>
+            <h2 class="s-heading" id="h-beyond">Community &amp; Beyond</h2>
             <div class="comm-list">
                 <div class="comm-item">
                     <div class="comm-icon"><img src="images/jci-manila.png" alt="JCI Manila"></div>
                     <div>
-                        <div class="comm-name">JCI Manila</div>
-                        <p class="comm-desc">Special Projects Commissioner (2019–2021) at Junior Chamber International Manila. Recipient of JCI Philippines Leadership, Presidential, and Commissioner Awards 2020–21.</p>
+                        <h3 class="comm-name">JCI Manila</h3>
+                        <ul class="comm-desc">
+                            <li>Special Projects Commissioner (2019–2021) at Junior Chamber International Manila.</li>
+                            <li>Recipient of JCI Philippines Leadership, Presidential, and Commissioner Awards 2020–21.</li>
+                        </ul>
                         <span class="comm-tag">Leadership &middot; Commissioner Awards</span>
                     </div>
                 </div>
                 <div class="comm-item">
                     <div class="comm-icon"><img src="images/devcon-speaker.webp" alt="DevCon"></div>
                     <div>
-                        <div class="comm-name">Speaking Engagements</div>
-                        <p class="comm-desc">Globe: AI Enablement Sessions with RAG &middot; DevCon: Big Data &amp; the 4th Industrial Revolution &middot; JCI Philippines: Data Science in Business. Bridging enterprise data and the Filipino developer community.</p>
+                        <h3 class="comm-name">Speaking Engagements</h3>
+                        <ul class="comm-desc">
+                            <li>Globe: AI Enablement Sessions with RAG</li>
+                            <li>DevCon: Big Data &amp; the 4th Industrial Revolution</li>
+                            <li>JCI Philippines: Data Science in Business</li>
+                            <li>Bridging enterprise data and the Filipino developer community.</li>
+                        </ul>
                         <span class="comm-tag">Globe &middot; DevCon &middot; JCI Philippines</span>
                     </div>
                 </div>
                 <div class="comm-item">
-                    <div class="comm-icon">🔗</div>
+                    <div class="comm-icon" aria-hidden="true">🔗</div>
                     <div>
-                        <div class="comm-name">Professional Affiliations</div>
-                        <p class="comm-desc">Member of IEEE and IECEP. Advocating for blockchain technology, digital ownership, and equitable access through community education.</p>
+                        <h3 class="comm-name">Professional Affiliations</h3>
+                        <ul class="comm-desc">
+                            <li>Member of IEEE and IECEP.</li>
+                            <li>Advocating for blockchain technology, digital ownership, and equitable access through community education.</li>
+                        </ul>
                         <span class="comm-tag">IEEE &middot; IECEP &middot; Web3</span>
                     </div>
                 </div>
             </div>
         </div>
     </section>
+    </main>
 
 
     <script>
+        const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         const nebulaImg = document.getElementById('nebulaImg');
         let _nScale = 1.8, _nTargetScale = 1.8;
         let _nX = 0, _nY = 0, _nTX = 0, _nTY = 0;
@@ -999,19 +1029,21 @@
             _nTargetScale = 1.8 - p * 0.8;
         }
 
-        window.addEventListener('mousemove', (e) => {
-            const cx = window.innerWidth / 2, cy = window.innerHeight / 2;
-            _nTX = ((e.clientX - cx) / cx) * -18;
-            _nTY = ((e.clientY - cy) / cy) * -12;
-        });
+        if (!prefersReduced) {
+            window.addEventListener('mousemove', (e) => {
+                const cx = window.innerWidth / 2, cy = window.innerHeight / 2;
+                _nTX = ((e.clientX - cx) / cx) * -18;
+                _nTY = ((e.clientY - cy) / cy) * -12;
+            });
 
-        (function animNebula() {
-            _nScale += (_nTargetScale - _nScale) * 0.04;
-            _nX    += (_nTX - _nX) * 0.06;
-            _nY    += (_nTY - _nY) * 0.06;
-            nebulaImg.style.transform = `scale(${_nScale}) translate(${_nX}px, ${_nY}px)`;
-            requestAnimationFrame(animNebula);
-        })();
+            (function animNebula() {
+                _nScale += (_nTargetScale - _nScale) * 0.04;
+                _nX    += (_nTX - _nX) * 0.06;
+                _nY    += (_nTY - _nY) * 0.06;
+                nebulaImg.style.transform = `scale(${_nScale}) translate(${_nX}px, ${_nY}px)`;
+                requestAnimationFrame(animNebula);
+            })();
+        }
 
         (function () {
             const slides = [...document.querySelectorAll('section, .what-slide, footer')];
@@ -1023,10 +1055,16 @@
 
             navTot.textContent = String(total).padStart(2, '0');
 
+            indicator.setAttribute('role', 'group');
+            indicator.setAttribute('aria-label', 'Section navigation');
+
             // Build dots
             slides.forEach((_, i) => {
-                const d = document.createElement('div');
-                d.className = 'si-dot' + (i === 0 ? ' active' : '');
+                const d = document.createElement('button');
+                d.type = 'button';
+                d.className = 'si-dot';
+                d.setAttribute('aria-label', 'Go to section ' + (i + 1) + ' of ' + total);
+                if (i === 0) d.setAttribute('aria-current', 'true');
                 d.addEventListener('click', () => goTo(i));
                 indicator.appendChild(d);
             });
@@ -1035,11 +1073,16 @@
             slides.forEach((el, i) => {
                 el.classList.add('fp-slide');
                 el.classList.add(i === 0 ? 'fp-active' : 'fp-below');
+                el.setAttribute('tabindex', '-1');
+                el.setAttribute('aria-hidden', i === 0 ? 'false' : 'true');
             });
 
             function updateUI(idx) {
                 navCur.textContent = String(idx + 1).padStart(2, '0');
-                indicator.querySelectorAll('.si-dot').forEach((d, i) => d.classList.toggle('active', i === idx));
+                indicator.querySelectorAll('.si-dot').forEach((d, i) => {
+                    if (i === idx) d.setAttribute('aria-current', 'true');
+                    else d.removeAttribute('aria-current');
+                });
                 setNebulaScale(idx / Math.max(total - 1, 1));
             }
             updateUI(0);
@@ -1055,7 +1098,7 @@
             ];
 
             function animateSlideIn(slideEl, selector) {
-                if (!selector || typeof anime === 'undefined') return;
+                if (!selector || typeof anime === 'undefined' || prefersReduced) return;
                 const els = slideEl.querySelectorAll(selector);
                 if (!els.length) return;
                 anime.set(els, { opacity: 0, translateY: 22 });
@@ -1086,9 +1129,12 @@
                     from.classList.add(dir > 0 ? 'fp-above' : 'fp-below');
                     to.classList.remove('fp-above', 'fp-below');
                     to.classList.add('fp-active');
+                    to.setAttribute('aria-hidden', 'false');
+                    from.setAttribute('aria-hidden', 'true');
                     current = idx;
                     updateUI(idx);
                     animateSlideIn(to, slideAnimTargets[idx]);
+                    to.focus({ preventScroll: true });
                     setTimeout(() => { animating = false; }, 850);
                 }));
             }
@@ -1155,6 +1201,7 @@
 
         // ── CURSOR TRAIL ──
         (function () {
+            if (prefersReduced) return;
             const canvas = document.getElementById('cursorCanvas');
             const ctx = canvas.getContext('2d');
             function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
@@ -1190,8 +1237,6 @@
                 requestAnimationFrame(draw);
             })();
         })();
-
-        // ── KEYBOARD HINT (permanent) ──
 
         // ── KONAMI CODE ──
         (function () {
