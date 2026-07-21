@@ -43,9 +43,8 @@
 
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
         :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
-        .fp-slide:focus, .fp-slide:focus-visible { outline: none; }
-        html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
-        body { font-family: var(--f-body); background: var(--bg); color: var(--text-1); overflow: hidden; }
+        html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; scroll-padding-top: var(--nav-h); overflow-x: hidden; }
+        body { font-family: var(--f-body); background: var(--bg); color: var(--text-1); overflow-x: hidden; }
 
         /* ── NEBULA ── */
         .bg-nebula {
@@ -76,6 +75,9 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
+            background: rgba(0,0,0,0.55);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
         }
         .nav-logo {
             font-family: var(--f-display);
@@ -142,26 +144,17 @@
         }
         .si-dot:hover::before { background: var(--text-2); }
 
-        /* ── SLIDES ── */
-        .fp-slide {
-            position: fixed !important;
-            top: var(--nav-h); left: 0; right: 0; bottom: 0;
-            overflow-y: auto;
-            overscroll-behavior: contain;
-            z-index: 10;
-            transition: transform 0.75s cubic-bezier(0.76, 0, 0.24, 1), opacity 0.6s ease;
-            will-change: transform, opacity;
+        /* ── SECTION SCROLL + FADE ── */
+        section, .what-slide, footer {
+            scroll-margin-top: var(--nav-h);
         }
-        .fp-slide.fp-active  { transform: translateY(0) scale(1); opacity: 1; pointer-events: auto; z-index: 11; }
-        .fp-slide.fp-above   { transform: translateY(-100%) scale(0.9); opacity: 0; pointer-events: none; }
-        .fp-slide.fp-below   { transform: translateY(100%) scale(0.97); opacity: 0; pointer-events: none; }
 
         /* ── SHARED INNER LAYOUT ── */
         .slide-inner {
             max-width: 1100px;
             margin: 0 auto;
             padding: 3.5rem 3rem;
-            min-height: 100%;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -190,14 +183,14 @@
         .hero {
             display: flex;
             align-items: stretch;
-            min-height: 100%;
+            min-height: 100vh;
         }
         .hero-body {
             flex: 1;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            padding: 2.5rem 2.5rem 2.5rem 5rem;
+            padding: calc(2.5rem + var(--nav-h)) 2.5rem 2.5rem 5rem;
         }
         .hero-eyebrow {
             font-size: 0.75rem;
@@ -304,7 +297,7 @@
         .what-slide {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            min-height: 100%;
+            min-height: 100vh;
         }
         .what-panel {
             padding: 5rem 4.5rem;
@@ -614,7 +607,7 @@
             justify-content: center;
             text-align: center;
             padding: 4rem 3rem;
-            min-height: 100%;
+            min-height: 100vh;
         }
         .footer-eyebrow {
             font-size: 0.6rem;
@@ -670,7 +663,7 @@
                 animation-iteration-count: 1 !important;
                 transition-duration: 0.001ms !important;
             }
-            .fp-slide { transition: opacity 0.2s ease !important; }
+            section, .what-slide, footer { opacity: 1 !important; }
             .bg-nebula img { transform: scale(1.4) !important; }
             #cursorCanvas { display: none; }
         }
@@ -681,14 +674,14 @@
             nav { padding: 0 1.5rem; }
             .nav-counter { display: none; }
             .slide-indicator { display: none; }
-            .hero-body { padding: 3.5rem 1.5rem; }
+            .hero-body { padding: calc(var(--nav-h) + 2rem) 1.5rem 3.5rem; }
             .hero-portrait { display: none; }
             .hero-name { font-size: clamp(3.5rem, 13vw, 6rem); }
             .hero-tagline { max-width: 100%; }
             .what-slide { grid-template-columns: 1fr; }
             .what-panel { padding: 3rem 1.5rem; }
             .what-panel:first-child { border-right: none; border-bottom: 1px solid var(--border); }
-            .slide-inner { padding: 2.5rem 1.5rem; justify-content: flex-start; padding-top: 3rem; }
+            .slide-inner { padding: 2.5rem 1.5rem; justify-content: flex-start; padding-top: calc(var(--nav-h) + 2rem); }
             .exp-item { grid-template-columns: 40px 1fr; }
             .tl-item { grid-template-columns: 1fr; gap: 0.4rem; }
             .adv-grid { grid-template-columns: 1fr 1fr; }
@@ -803,12 +796,6 @@
             <span class="ambient-moon" id="moonPhase" title=""></span>
             <span id="liveClock">00:00:00</span>
             <span>PHT</span>
-            <span class="ambient-divider"></span>
-            <div class="key-hint" id="keyHint">
-                <span class="key-cap">↑</span>
-                <span class="key-cap">↓</span>
-                <span>navigate</span>
-            </div>
         </div>
         <div class="nav-counter"><span class="cur" id="navCur">01</span> / <span id="navTot">08</span></div>
         <a href="mailto:carlosetmattus@gmail.com" class="nav-cta">Get in Touch</a>
@@ -1157,135 +1144,120 @@
         }
 
         (function () {
-            const slides = [...document.querySelectorAll('section, .what-slide, footer')];
+            const sections = [...document.querySelectorAll('section, .what-slide, footer')];
             const indicator = document.getElementById('slideIndicator');
             const navCur = document.getElementById('navCur');
             const navTot = document.getElementById('navTot');
-            const total = slides.length;
-            let current = 0, animating = false, lastWheel = 0;
+            const total = sections.length;
+            const dots = [];
 
             navTot.textContent = String(total).padStart(2, '0');
-
             indicator.setAttribute('role', 'group');
             indicator.setAttribute('aria-label', 'Section navigation');
 
-            // Build dots
-            slides.forEach((_, i) => {
+            sections.forEach((section, i) => {
                 const d = document.createElement('button');
                 d.type = 'button';
                 d.className = 'si-dot';
                 d.setAttribute('aria-label', 'Go to section ' + (i + 1) + ' of ' + total);
                 if (i === 0) d.setAttribute('aria-current', 'true');
-                d.addEventListener('click', () => goTo(i));
+                d.addEventListener('click', () => section.scrollIntoView({ behavior: 'smooth', block: 'start' }));
                 indicator.appendChild(d);
+                dots.push(d);
             });
 
-            // Init slides
-            slides.forEach((el, i) => {
-                el.classList.add('fp-slide');
-                el.classList.add(i === 0 ? 'fp-active' : 'fp-below');
-                el.setAttribute('tabindex', '-1');
-                el.setAttribute('aria-hidden', i === 0 ? 'false' : 'true');
-            });
-
-            function updateUI(idx) {
-                navCur.textContent = String(idx + 1).padStart(2, '0');
-                indicator.querySelectorAll('.si-dot').forEach((d, i) => {
-                    if (i === idx) d.setAttribute('aria-current', 'true');
-                    else d.removeAttribute('aria-current');
-                });
-                setNebulaScale(idx / Math.max(total - 1, 1));
-            }
-            updateUI(0);
-
-            // Elements to stagger per slide index (null = skip)
-            const slideAnimTargets = [
-                null,           // 0: hero — CSS animations handle it
-                '.what-panel',  // 1: what I do
-                '.exp-item',    // 2: expertise & stack
-                '.tl-item',     // 3: experience
-                '.adv-card',    // 4: advisory
-                '.cert-item, .edu-item', // 5: credentials
-                '.comm-item',   // 6: community
+            const staggerTargets = [
+                null,
+                '.what-panel',
+                '.exp-item',
+                '.tl-item',
+                '.adv-card',
+                '.cert-item, .edu-item',
+                '.comm-item',
+                null,
             ];
 
-            function animateSlideIn(slideEl, selector) {
+            function animateIn(el, selector) {
                 if (!selector || typeof anime === 'undefined' || prefersReduced) return;
-                const els = slideEl.querySelectorAll(selector);
+                const els = el.querySelectorAll(selector);
                 if (!els.length) return;
                 anime.set(els, { opacity: 0, translateY: 22 });
                 setTimeout(() => {
-                    anime({
-                        targets: els,
-                        opacity: [0, 1],
-                        translateY: [22, 0],
-                        duration: 480,
-                        delay: anime.stagger(65),
-                        easing: 'easeOutCubic',
+                    anime({ targets: els, opacity: [0, 1], translateY: [22, 0], duration: 480, delay: anime.stagger(65), easing: 'easeOutCubic' });
+                }, 350);
+            }
+
+            // Scroll-driven opacity: sections fade in/out continuously as you scroll
+            function getSectionOpacity(rect) {
+                const vh = window.innerHeight;
+                if (rect.bottom <= 0 || rect.top >= vh) return 0;
+                if (rect.top <= 0 && rect.bottom >= vh) return 1; // fills viewport
+                if (rect.top > 0) return Math.min((1 - rect.top / vh) * 2, 1); // entering from below
+                return Math.min((rect.bottom / vh) * 2, 1); // leaving through top
+            }
+
+            let rafPending = false;
+            function updateOpacity() {
+                sections.forEach(el => {
+                    el.style.opacity = getSectionOpacity(el.getBoundingClientRect());
+                });
+            }
+
+            // Stagger child animations triggered once per section
+            const staggerObs = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (!entry.isIntersecting) return;
+                    const idx = sections.indexOf(entry.target);
+                    if (idx > 0) animateIn(entry.target, staggerTargets[idx]);
+                    staggerObs.unobserve(entry.target);
+                });
+            }, { threshold: 0.3 });
+
+            // Track active section for nav counter + dots
+            const navObs = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (!entry.isIntersecting) return;
+                    const idx = sections.indexOf(entry.target);
+                    if (idx === -1) return;
+                    navCur.textContent = String(idx + 1).padStart(2, '0');
+                    dots.forEach((d, i) => {
+                        if (i === idx) d.setAttribute('aria-current', 'true');
+                        else d.removeAttribute('aria-current');
                     });
-                }, 600);
-            }
+                    setNebulaScale(idx / Math.max(total - 1, 1));
+                });
+            }, { threshold: 0.5 });
 
-            function goTo(idx) {
-                if (animating || idx === current || idx < 0 || idx >= total) return;
-                animating = true;
-                const dir = idx > current ? 1 : -1;
-                const from = slides[current], to = slides[idx];
-                to.style.transition = 'none';
-                to.classList.remove('fp-active', 'fp-above', 'fp-below');
-                to.classList.add(dir > 0 ? 'fp-below' : 'fp-above');
-                to.scrollTop = 0;
-                requestAnimationFrame(() => requestAnimationFrame(() => {
-                    to.style.transition = '';
-                    from.classList.remove('fp-active');
-                    from.classList.add(dir > 0 ? 'fp-above' : 'fp-below');
-                    to.classList.remove('fp-above', 'fp-below');
-                    to.classList.add('fp-active');
-                    to.setAttribute('aria-hidden', 'false');
-                    from.setAttribute('aria-hidden', 'true');
-                    current = idx;
-                    updateUI(idx);
-                    animateSlideIn(to, slideAnimTargets[idx]);
-                    to.focus({ preventScroll: true });
-                    setTimeout(() => { animating = false; }, 850);
-                }));
-            }
+            sections.forEach(el => {
+                el.style.opacity = '0';
+                staggerObs.observe(el);
+                navObs.observe(el);
+            });
+            updateOpacity(); // set correct initial state immediately
 
-            window.addEventListener('wheel', (e) => {
-                const el = slides[current];
-                const atBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 10;
-                const atTop = el.scrollTop <= 10;
-                const down = e.deltaY > 0;
-                if ((down && atBottom) || (!down && atTop)) {
-                    e.preventDefault();
-                    const now = Date.now();
-                    if (now - lastWheel < 950) return;
-                    lastWheel = now;
-                    goTo(current + (down ? 1 : -1));
+            window.addEventListener('scroll', () => {
+                if (!rafPending) {
+                    rafPending = true;
+                    requestAnimationFrame(() => { updateOpacity(); rafPending = false; });
                 }
-            }, { passive: false });
+            }, { passive: true });
 
-            window.addEventListener('keydown', (e) => {
-                if (e.key === 'ArrowDown' || e.key === 'PageDown') goTo(current + 1);
-                if (e.key === 'ArrowUp'   || e.key === 'PageUp')   goTo(current - 1);
-            });
-
-            let ty = 0;
-            window.addEventListener('touchstart', (e) => { ty = e.touches[0].clientY; }, { passive: true });
-            window.addEventListener('touchend', (e) => {
-                const diff = ty - e.changedTouches[0].clientY;
-                if (Math.abs(diff) > 60) goTo(current + (diff > 0 ? 1 : -1));
-            });
-
+            // Smooth scroll for internal anchor links
             document.querySelectorAll('a[href^="#"]').forEach(a => {
                 a.addEventListener('click', (e) => {
                     const id = a.getAttribute('href').slice(1);
                     if (!id) return;
-                    const idx = slides.findIndex(s => s.id === id);
-                    if (idx !== -1) { e.preventDefault(); goTo(idx); }
+                    const target = document.getElementById(id);
+                    if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
                 });
             });
         })();
+
+        // Drive nebula scale continuously from scroll position
+        window.addEventListener('scroll', () => {
+            const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+            if (maxScroll > 0) setNebulaScale(window.scrollY / maxScroll);
+        }, { passive: true });
 
         // ── LIVE CLOCK (Manila / PHT) ──
         function updateClock() {
